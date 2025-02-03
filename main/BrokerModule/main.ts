@@ -9,10 +9,4 @@ export default class BrokerEventHandler{
     public static emit<EventConfig>(EventData){
          console.log(EventData)
     }
-    public static emitPayload<EventConfig>(EventData){
-         if(EventData != null){
-              
-         }
-    }
-    // End1
 }
