@@ -5,7 +5,7 @@ let initServer = net.createServer((socket)=>{
    socket.on("close",(action)=>BrokerEventHandler.emit(action))
    socket.on("connection",(action)=>BrokerEventHandler.emit(action))
    //Not Implemented
-   //socket.on("data",(action)=>BrokerEventHandler.emitPayload(action))
+   socket.on("data",(action)=>BrokerEventHandler.emitPayload(action))
 })
 initServer.listen(1883,()=>{
    //Test
