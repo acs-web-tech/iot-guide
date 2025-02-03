@@ -1,0 +1,8 @@
+{
+  "devDependencies": {
+    "typescript": "^5.7.3"
+  },
+  "dependencies": {
+    "net": "^1.0.2"
+  }
+}
