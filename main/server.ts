@@ -1,5 +1,5 @@
-import net from "net";
-import BrokerEventHandler from "./BrokerModule/main";
+import * as net from "net";
+import {BrokerEventHandler} from "./BrokerModule/main";
 let initServer = net.createServer((socket)=>{
    // Wrapper interface implemented here 
    socket.on("close",(action)=>BrokerEventHandler.emit(action))

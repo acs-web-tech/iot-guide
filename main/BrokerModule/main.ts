@@ -1,5 +1,5 @@
 import EventConfig from "./Interfaces/BrokerEvent";
-export default class BrokerEventHandler{
+export  class BrokerEventHandler{
     private EventState:Object = new Object() 
     //private Stages:<  = 
     constructor(){
@@ -9,4 +9,7 @@ export default class BrokerEventHandler{
     public static emit<EventConfig>(EventData){
          console.log(EventData)
     }
+    public static emitPayload<EventConfig>(EventData){
+        console.log(EventData)
+   }
 }
