@@ -1,7 +1,7 @@
 //Import the mqtt library
 const mqtt=require('mqtt');
 //define the broker address
-const brokerurl="";
+const brokerurl="mqtt://192.168.1.2";
 //define the topic where you want to publish the data
 const topic='test/topic';
 //create a client and connect it to broker
@@ -11,7 +11,7 @@ client.on('connect', ()=>{
    console.log("Client is connected");
 
    //data to be published
-   const message="Hello, MQTT";
+   const message=Buffer.from("Hello, MQTT","utf-8");
    //sending data to the topic\
    client.publish(topic,message,(err)=>{
       if(!err){
@@ -21,7 +21,7 @@ client.on('connect', ()=>{
         console.error("Failed to publish message", err);
       }
       //close the connection after publishing or sending
-      client.end();
+      //client.end();
    })
 })
 
