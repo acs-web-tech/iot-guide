@@ -8,7 +8,7 @@ var BrokerEventHandler = /** @class */ (function () {
         this.EventState = new Object();
     }
     // Start1: Validations are still to be extended
-    BrokerEventHandler.emit = function (EventData) {
+    BrokerEventHandler.emit = function (EventData, socket) {
         console.log(EventData);
     };
     BrokerEventHandler.emitPayload = function (EventData, socket) {

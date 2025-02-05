@@ -7,7 +7,7 @@ export  class BrokerEventHandler{
 
     }
     // Start1: Validations are still to be extended
-    public static emit<EventConfig>(EventData){
+    public static emit<EventConfig>(EventData,socket){
          console.log(EventData)
     }
     public static emitPayload<EventConfig>(EventData,socket){
