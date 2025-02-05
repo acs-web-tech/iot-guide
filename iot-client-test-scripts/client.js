@@ -1,5 +1,6 @@
 //Import the mqtt library
 const mqtt=require('mqtt');
+const {Publish} = require("./operations")
 //define the broker address
 const brokerurl="mqtt://192.168.1.2";
 //define the topic where you want to publish the data
@@ -13,6 +14,7 @@ client.on('connect', ()=>{
    //data to be published
    const message=Buffer.from("Hello, MQTT","utf-8");
    //sending data to the topic\
+<<<<<<< HEAD
    client.publish(topic,message,(err)=>{
       if(!err){
           console.log(`Message "${message}" published to topic "${topic}" `);
@@ -24,6 +26,10 @@ client.on('connect', ()=>{
       //client.end();
    })
 })
+=======
+   client.publish(...Publish(topic,message,callback))
+   
+>>>>>>> 5891a40 (Topic Init)
 
 //Event handlers for errors
 client.on('error',(err)=>{
@@ -33,5 +39,6 @@ client.on('error',(err)=>{
 //Evenr handlers for disconnection
 client.on('close',()=>{
     console.log("Disconnected from server");
+})
 })
 
