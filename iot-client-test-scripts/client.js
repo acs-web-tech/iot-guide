@@ -13,17 +13,8 @@ client.on('connect', ()=>{
    //data to be published
    const message=Buffer.from("Hello, MQTT","utf-8");
    //sending data to the topic\
-   client.publish(topic,message,(err)=>{
-      if(!err){
-          console.log(`Message "${message}" published to topic "${topic}" `);
-      }
-      else{
-        console.error("Failed to publish message", err);
-      }
-      //close the connection after publishing or sending
-      //client.end();
-   })
-})
+   client.publish(...Publish(topic,message,callback))
+   
 
 //Event handlers for errors
 client.on('error',(err)=>{
@@ -34,4 +25,4 @@ client.on('error',(err)=>{
 client.on('close',()=>{
     console.log("Disconnected from server");
 })
-
+})
