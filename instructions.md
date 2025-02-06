@@ -16,11 +16,7 @@ If a package does not support default imports, use:
 ```ts
 import * as somePackage from "some-package";
 ```
-### CONNECTION ACKNOWLEDGEMENT (MQTT Packets) 
-contributers working on packet deserialization consider Enum response file(Enums.ts) on arun-broker-function branch and also check for updates in server.ts file
 
-##### Note: New libraries should not be used without approval, and the above method of import should only be used if the library supports for core functions. If needed, bring it up in the team discussion to further evaluate
- 
 # MQTT CONNECT Packet (0x10)
 
 The `CONNECT` packet is used by the client to establish a connection to the broker. It is the first packet sent after the TCP connection is established.
@@ -51,8 +47,61 @@ The `CONNECT` packet is used by the client to establish a connection to the brok
 - **0x00, 0x3C**: Keep Alive Interval (2 bytes). This value indicates how long the client wants to remain connected without sending any message before the broker considers the connection to be dead. Here, it's set to 60 seconds (`0x00 0x3C`).
 
 - **0x00, 0x00**: Payload (client ID). In this example, there is no client ID specified in the packet, so it is zeroed out (`0x00 0x00`).
-
 ## Final Explanation:
 - The `CONNECT` packet is used to initiate a connection to the MQTT broker.
 - The protocol version and flags (such as Clean Session) specify connection behaviors.
 - The remaining length and the payload (such as the Keep Alive interval) complete the connection request.
+
+### Breakdown of Fixed Fields in MQTT CONNECT Packet
+## Fixed Header:
+
+- **Packet Type**: 1 byte
+- **Remaining Length**: 1 byte (or more depending on message size, here we assume 1 byte for simplicity)
+- **Total for Fixed Header**: 1 byte + 1 byte = 2 bytes
+
+## Variable Header:
+
+**Protocol Name**:
+- **Length**: 2 bytes
+- **Value**: 4 bytes ("MQTT" is 4 bytes in UTF-8 encoding)
+- **Total for Protocol Name**: 2 bytes (length) + 4 bytes (value) = 6 bytes
+
+**Flags (Connect Flags)**:
+
+- **Connect Flags**: 1 byte (this contains various flags like username/password, clean session, etc.)
+- **Total for Connect Flags**: 1 byte
+
+- **Keep Alive**: 2 bytes (16 bits)
+
+- **Total for Keep Alive**: 2 bytes
+
+## Client ID:
+
+- **Length**: 2 bytes
+- **Client ID value** (e.g., "mqttjs_bcc54698e"): 15 bytes (as per your example)
+- **Total for Client ID**: 2 bytes (length) + 15 bytes (value) = 17 bytes
+
+## Username:
+
+- **Length**: 2 bytes
+- **Username value (e.g., "arun")**: 4 bytes
+- **Total for Username**: 2 bytes (length) + 4 bytes (value) = 6 bytes
+
+## Password:
+
+- **Length**: 2 bytes
+- **Password value (e.g., "1234")**: 4 bytes
+- **Total for Password**: 2 bytes (length) + 4 bytes (value) = 6 bytes
+
+## Total Bytes Calculation:
+- **Fixed Header**: 2 bytes
+- **Protocol Name**: 6 bytes
+- **Connect Flags**: 1 byte
+- **Keep Alive**: 2 bytes
+- **Client ID**: 17 bytes
+- **Username**: 6 bytes
+- **Password**: 6 bytes
+## Total Bytes:
+2 + 6 + 1 + 2 + 17 + 6 + 6 = 40 bytes
+
+##### Note: New libraries should not be used without approval, and the above method of import should only be used if the library supports for core functions. If needed, bring it up in the team discussion to further evaluate
