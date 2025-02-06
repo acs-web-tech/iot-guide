@@ -56,3 +56,32 @@ The `CONNECT` packet is used by the client to establish a connection to the brok
 - The `CONNECT` packet is used to initiate a connection to the MQTT broker.
 - The protocol version and flags (such as Clean Session) specify connection behaviors.
 - The remaining length and the payload (such as the Keep Alive interval) complete the connection request.
+
+
+# MQTT CONACK Packet(0x20)
+  The CONNACK (Connection Acknowledgment) packet is sent by the MQTT broker in response to a CONNECT packet from a client. It indicates whether the connection was successful or if there was an error.
+
+## Hex Representation
+   0x20, 0x02, 0x00, 0x00
+
+# Breakdown:
+- **0x20**: 0x20 represents an MQTT CONNACK packet.
+
+- **0x02**:Indicates that the next 2 bytes (Session Present + Return Code) form the actual CONNACK payload.
+
+- **0x00**: Connect Acknowledge Flags:
+     - **Bit 0**: No previous session exists
+     - **Bit 1**: Previous session exists
+
+- **0x00**: Return code.This byte represents whether the connection attempt was successful. Those types are:
+     - **Bit 0**:Connection accepted
+     - **Bit 1**:Connection Refused: Unacceptable Protocol Version 
+     - **Bit 2**:Connection Refused: Identifier Rejected 
+     - **Bit 3**:Connection Refused: Server Unavailable 
+     - **Bit 4**:Connection Refused: Bad Username or Password
+     - **Bit 5**:Connection Refused: Not Authorized
+
+## Final Explaination:
+  - The CONNACK packet is sent by the MQTT broker in response to a CONNECT packet from a client.
+  - It confirms whether the connection was successful or if an error occurred.
+   
