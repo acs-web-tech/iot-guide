@@ -1,0 +1,1 @@
+const SPLIT_PASSWORD_UNAME_REGEXP = /w/igm 

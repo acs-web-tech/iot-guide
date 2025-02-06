@@ -7,7 +7,6 @@ let initServer = net.createServer((socket)=>{
    //Not Implemented
    socket.on("data",(action)=>{
    BrokerEventHandler.emitPayload(action,socket)
-   socket.write(packets.puback)
   })
 })
 initServer.listen(1883,()=>{
