@@ -1,6 +1,7 @@
 {
-    "compilerOptions": {
-        "baseUrl": "./",
-        "types": ["node"]
-  }
+  "compilerOptions": {
+    "baseUrl": "./",
+    "types": ["node"]
+  },
+
 }
