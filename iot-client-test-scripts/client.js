@@ -1,7 +1,7 @@
 //Import the mqtt library
 const mqtt=require('mqtt');
 //define the broker address
-const brokerurl="mqtt://192.168.1.2";
+const brokerurl="mqtt://192.168.1.6";
 //define the topic where you want to publish the data
 const topic='test/topic';
 //create a client and connect it to broker
