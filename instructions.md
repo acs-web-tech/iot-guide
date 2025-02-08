@@ -47,10 +47,6 @@ The `CONNECT` packet is used by the client to establish a connection to the brok
 - **0x00, 0x3C**: Keep Alive Interval (2 bytes). This value indicates how long the client wants to remain connected without sending any message before the broker considers the connection to be dead. Here, it's set to 60 seconds (`0x00 0x3C`).
 
 - **0x00, 0x00**: Payload (client ID). In this example, there is no client ID specified in the packet, so it is zeroed out (`0x00 0x00`).
-## Final Explanation:
-- The `CONNECT` packet is used to initiate a connection to the MQTT broker.
-- The protocol version and flags (such as Clean Session) specify connection behaviors.
-- The remaining length and the payload (such as the Keep Alive interval) complete the connection request.
 
 ### Breakdown of Fixed Fields in MQTT CONNECT Packet
 ## Fixed Header:
