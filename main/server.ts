@@ -5,6 +5,9 @@ let initServer = net.createServer((socket)=>{
    // Wrapper interface implemented here 
    socket.on("close",(action)=>BrokerEventHandler.emit(action,socket))
    //Not Implemented
+   socket.on("connect",(action)=>{
+      BrokerEventHandler.emitPayload(action,socket)
+   })
    socket.on("data",(action)=>{
    BrokerEventHandler.emitPayload(action,socket)
   })
