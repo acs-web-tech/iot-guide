@@ -1,9 +1,10 @@
 import EventConfig from "./Interfaces/BrokerEvent";
 import { packets } from "./Interfaces/Enums";
-import { ExtractUnamePassword,DestructurePayload } from "../Utils/ByteManupulator";
+import { ExtractUnamePassword, DestructurePayload } from "../Utils/ByteManupulator";
+
 export class BrokerEventHandler {
      private EventState: Object = new Object()
-     //private Stages:<  = 
+     private Activities = new Map()
      constructor() {
 
      }
@@ -11,23 +12,31 @@ export class BrokerEventHandler {
      public static emit<EventConfig>(EventData, socket) {
           console.log(EventData)
      }
-     public static checkCredentials(payload) {
-          let plainPayload  = DestructurePayload(payload)
-          return plainPayload.username.toString() == "arun" && plainPayload.password.toString() == "1234"
+     private addConnection(timeStamp: Date, cliendID: string) {
+
+     }
+     public static validateRequest(payload) {
+          let plainPayload = DestructurePayload(payload)
+          if (plainPayload.protocolLevel == 4) {
+               let trimUser = plainPayload.username.toString("ascii")
+               let trimPassword = plainPayload.password.toString("ascii")
+               return trimUser == "arun900" && trimPassword == "1234"
+          }
+          return null
      }
      public static emitPayload<EventConfig>(EventData, socket) {
           let eventDataHex: string = EventData.toString("hex")
-          let action = parseInt(eventDataHex.substring(0, 2))
-          console.log(eventDataHex)
-          switch (action) {
+          let action = DestructurePayload(EventData)
+          switch (action.type) {
                // 10 Represents connection packet
-               case 10:
-                    if (this.checkCredentials(EventData)) {
+               case 16:
+                    if (this.validateRequest(EventData)) {
+
                          socket.write(packets.conack)
                          break;
                     }
                     socket.write(packets.conaerror)
                     break;
-               }
+          }
      }
 }
