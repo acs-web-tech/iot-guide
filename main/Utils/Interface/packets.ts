@@ -12,7 +12,8 @@ export interface PacketStructure {
     cliendID: Buffer,
     usernameLen: number,
     username: Buffer,
-    password: Buffer
+    password: Buffer,
+    passwordLen: number,
 
 }
 export let VaraiblesHex = {
