@@ -18,6 +18,7 @@ export function ExtractUnamePassword(eventDataHex): Array<string> {
 export function DestructurePayload(eventDataHex: Buffer): PacketStructure {
     let buffer: Buffer = eventDataHex
     // Refactored Method
+    console.log(buffer)
     let packets: PacketStructure = {
         type: 0,
         remainingLength: 0,
@@ -35,7 +36,7 @@ export function DestructurePayload(eventDataHex: Buffer): PacketStructure {
     }
     let cursor = 0
     packets.type = buffer[cursor]
-    packets.remainingLength = buffer[++cursor]
+    packets.remainingLength = buffer[++cursor]+buffer[++cursor]
     packets.protocolLength = (buffer[++cursor] + buffer[++cursor])
     packets.protocolName = buffer.subarray(cursor, ++cursor + packets.protocolLength)
     packets.protocolLevel = buffer[cursor = packets.protocolLength + cursor++]

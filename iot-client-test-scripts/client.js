@@ -1,11 +1,11 @@
 //Import the mqtt library
 const mqtt = require('mqtt');
 //define the broker address
-const brokerurl = "mqtt://192.168.1.7";
+const brokerurl = "mqtt://192.168.1.3";
 //define the topic where you want to publish the data
 const topic = 'test/topic';
 //create a client and connect it to broker
-const client = mqtt.connect(brokerurl, { username: "arun900", password: "1234", clientId: "as00909kjk" });
+const client = mqtt.connect(brokerurl, { username: "arun900", password: "1234", clientId: "as00909kjkodfsdopfjsdofsdlfsdjklfsdjfksdjfesfe09890r8------ojejqwiljewiodioejioejioeojiojwiojkdflsdfldskc;ldskfds;fksd;lfksdf;ldk;dsfks;ldk",keepalive:1000 });
 
 client.on('connect', () => {
     console.log("Client is connected");
