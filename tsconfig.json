@@ -3,6 +3,7 @@
     "baseUrl": "./",
     "types": [
       "node"
-    ]
+    ],
+    "experimentalDecorators": true
   }
 }

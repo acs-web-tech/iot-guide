@@ -1,10 +1,15 @@
 import EventConfig from "./Interfaces/BrokerEvent";
 import { packets } from "./Interfaces/Enums";
 import { ExtractUnamePassword, DestructurePayload } from "../Utils/ByteManupulator";
-
+import { validatePayload } from "../Utils/PayloadValidation";
+import { Request_State } from "./Interfaces/EventConfig";
+import { PacketStructure } from "../Utils/Interface/packets";
+import { ReasonCode } from "./Interfaces/EventConfig";
 export class BrokerEventHandler {
-     private EventState: Object = new Object()
-     private Activities = new Map()
+     private EventState: Object = new Object();
+     private Activities = new Map();
+     public static eventData: Buffer;
+     public static state: any = { reject: false, reasonCode: 0, request: {} };
      constructor() {
 
      }
@@ -15,27 +20,45 @@ export class BrokerEventHandler {
      private addConnection(timeStamp: Date, cliendID: string) {
 
      }
-     public static validateRequest(payload) {
-          let plainPayload = DestructurePayload(payload)
-          if (plainPayload.protocolLevel == 4) {
-               let trimUser = plainPayload.username.toString("ascii")
-               let trimPassword = plainPayload.password.toString("ascii")
-               return trimUser == "arun900" && trimPassword == "1234"
-          }
+     @validatePayload
+     public static validateRequest(payload: Buffer):boolean|null {
+               let password = this.state.request.password.toString()
+               let username = this.state.request.username.toString()
+               console.log(username,password)
+               if (password == "1234" && username == "arun900") {
+                    return true
+               }
+          
           return null
      }
      public static emitPayload<EventConfig>(EventData, socket) {
+          this.eventData = EventData
           let eventDataHex: string = EventData.toString("hex")
-          let action = DestructurePayload(EventData)
-          switch (action.type) {
+          let action = this.validateRequest(EventData)
+          switch (this.state.request.type) {
                // 10 Represents connection packet
+          
                case 16:
-                    if (this.validateRequest(EventData)) {
-
+                    
+                    let reason = this.state.reasonCode
+                    // Error generation function required to replace these code
+                    if (action && !this.state.reject) {
                          socket.write(packets.conack)
                          break;
                     }
-                    socket.write(packets.conaerror)
+                    if (reason == ReasonCode.BAD_USER_NAME_PASSWORD || reason == ReasonCode.NO_USERNAME_PASSWORD_FOUND ) {
+                         socket.write(packets.conaerror)
+                         break;
+                    }
+                    if (reason == ReasonCode.WILL_FLAG_SET_BUT_NO_MESSAGE || reason == ReasonCode.WILL_FLAG_SET_BUT_NO_TOPIC_PAYLOAD) {
+                         socket.write(packets.conaauthorerr)
+                         break;
+                    }
+                    if(reason == ReasonCode.UNSUPPORTED_PROTOCOL_VERSION || reason == ReasonCode.UNSUPPORTED_QOS_LEVEL){
+                         socket.write(packets.connprotocolerror)
+                         break;
+                    }
+                    socket.write(packets.conaauthorerr)
                     break;
           }
      }

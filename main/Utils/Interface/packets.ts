@@ -14,6 +14,10 @@ export interface PacketStructure {
     username: Buffer,
     password: Buffer,
     passwordLen: number,
+    willMessageTopicLen: number,
+    willMessageTopic: Buffer | null,
+    willMessageLen: number,
+    willMessage: Buffer | null
 
 }
 export let VaraiblesHex = {
