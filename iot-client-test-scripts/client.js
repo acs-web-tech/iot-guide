@@ -5,7 +5,8 @@ const brokerurl = "mqtt://192.168.1.2";
 //define the topic where you want to publish the data
 const topic = 'test/topic';
 //create a client and connect it to broker
-const client = mqtt.connect(brokerurl,{username: "arun900",password:"124",clientId: "as009034324322332423l4k23klrmedkmekemdkemde2kdm2eodmed2memed2ed2md2kdmwklm",keepalive:1000 });
+// creditails are just dummy
+const client = mqtt.connect(brokerurl,{username: "arun900",password:"124",clientId: "",keepalive:1000 });
 
 client.on('connect', () => {
     console.log("Client is connected");
