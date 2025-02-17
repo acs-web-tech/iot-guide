@@ -39,7 +39,7 @@ export class BrokerEventHandler {
                // 10 Represents connection packet
           
                case 16:
-                    
+                    console.log(this.state,EventData)
                     let reason = this.state.reasonCode
                     // Error generation function required to replace these code
                     if (action && !this.state.reject) {

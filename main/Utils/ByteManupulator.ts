@@ -39,11 +39,11 @@ export function DestructurePayload(eventDataHex: Buffer): PacketStructure {
     }
     let cursor = 0
     packets.type = buffer[cursor]
-    let willFitOneByte = Math.floor((buffer.byteLength) / 128)
-    packets.remainingLength = buffer.subarray(++cursor, cursor = cursor + willFitOneByte).byteLength
-    packets.protocolLength = (buffer[++cursor] + buffer[++cursor])
-    packets.protocolName = buffer.subarray(cursor, ++cursor + packets.protocolLength)
-    packets.protocolLevel = buffer[cursor = packets.protocolLength + cursor++]
+    let willFitOneByte = bytesConsumed(buffer.byteLength)
+    packets.remainingLength = buffer.subarray(++cursor, cursor + willFitOneByte).byteLength
+    packets.protocolLength = (buffer[cursor = cursor + packets.remainingLength] + buffer[++cursor])
+    packets.protocolName = buffer.subarray(cursor, cursor = cursor + packets.protocolLength)
+    packets.protocolLevel = buffer[++cursor]
     packets.flags = buffer[++cursor]
     packets.aliveTime = buffer[++cursor] + buffer[++cursor]
     packets.clientLength = buffer[++cursor] + buffer[++cursor]
@@ -54,8 +54,9 @@ export function DestructurePayload(eventDataHex: Buffer): PacketStructure {
             packets.willMessageTopic = null
         } else {
             packets.willMessageTopic = buffer.subarray(++cursor, cursor = cursor + packets.willMessageTopicLen)
-            packets.willMessageLen = buffer[cursor] + buffer[++cursor]
+            packets.willMessageLen = cursor + packets.willMessageTopicLen
         }
+        packets.willMessageLen = buffer[cursor] + buffer[++cursor]
         if (packets.willMessageLen == 0) {
             packets.willMessage = null
         } else {
@@ -71,5 +72,14 @@ export function DestructurePayload(eventDataHex: Buffer): PacketStructure {
 export let bufferHexToDecimal = (buffer: Buffer): number => {
     let hexString = buffer.toString("hex")
     return parseInt(hexString, 16)
+}
+export let bytesConsumed = (totalLength: number): number => {
+    if ((totalLength < 0x7F)) {
+        return 1
+    }
+    if ((totalLength > 0x7F)) {
+        return 2
+    }
+
 }
 let bufferToString = (buffer: Buffer): string => buffer.toString()
