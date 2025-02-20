@@ -20,6 +20,15 @@ export interface PacketStructure {
     willMessage: Buffer | null
 
 }
+export interface PacketStructure_Publish {
+    type: number,
+    remainingLength: number,
+    dup: number,
+    retain: number,
+    topicLen: number,
+    topic: Buffer | null,
+    payload: Buffer
+}
 export let VaraiblesHex = {
     variableLength: Buffer.from([0x4, 0Xc2]),
     MQTTHEX: Buffer.from([0x4D, 51, 54, 54])
