@@ -24,10 +24,12 @@ export interface PacketStructure_Publish {
     type: number,
     remainingLength: number,
     dup: number,
+    qos: number,
     retain: number,
     topicLen: number,
     topic: Buffer | null,
-    payload: Buffer
+    identifier: Buffer | null
+    payload: Buffer | null
 }
 export let VaraiblesHex = {
     variableLength: Buffer.from([0x4, 0Xc2]),

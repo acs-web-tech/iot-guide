@@ -2,7 +2,7 @@ import { Buffer } from "node:buffer"
 // Packet will be removed after forming all packets
 let packets = {
     //connect: Buffer.from([0x10, 0x14, 0x00, 0x04, 0x4D, 0x51, 0x54, 0x54, 0x04, 0x02, 0x00, 0x3C, 0x00, 0x00]),
-   // conack: Buffer.from([0x20, 0x02, 0x00, 0x00]),
+    // conack: Buffer.from([0x20, 0x02, 0x00, 0x00]),
     //conaerror: Buffer.from([0x20, 0x02, 0x00, 0x04]),
     //conaauthorerr: Buffer.from([0x20, 0x02, 0x00, 0x05]),
     //connprotocolerror: Buffer.from([0x20, 0x02, 0x00, 0x01]),// 0x20,
@@ -15,28 +15,28 @@ let packets = {
     pubcomp: Buffer.from([0x70, 0x02, 0x00, 0x01])
 }
 let ERROR_CODE_CONNACK = {
-    ACCEPTED:0,
-    BAD_PROTOCOL:1,
-    BAD_IDENTITY:2,
-    SERVER_UNAVAILABLE:3,
-    BAD_CREDENTIALS:4,
-    NOT_AUTHORIZED:5
+    ACCEPTED: 0,
+    BAD_PROTOCOL: 1,
+    BAD_IDENTITY: 2,
+    SERVER_UNAVAILABLE: 3,
+    BAD_CREDENTIALS: 4,
+    NOT_AUTHORIZED: 5
 }
 export let SUPPORTED_PACKETS = {
-    CONNECT: {type:16},
-    CONNACK: {type:32,remainingLength:2},
-    PUBLISH: {type:3},
-    PUBACK: 64,
-    PUBREC: 80,
-    PUBREL: 96,
-    PUBCOMP: 112,
-    SUBSCRIBE: 128,
-    SUBACK: 144,
-    UNSUBSCRIBE: 160,
-    UNSUBACK: 176,
-    PINGREQ: 192,
-    PINGRESP: 208,
-    DISCONNECT: 224
+    CONNECT: { type: 16 },
+    CONNACK: { type: 32, remainingLength: 2 },
+    PUBLISH: { type: 48 },
+    PUBACK: { type: 64 },
+    PUBREC: { type: 80 },
+    PUBREL: { type: 96 },
+    PUBCOMP: { type: 112 },
+    SUBSCRIBE: { type: 128 },
+    SUBACK: { type: 144 },
+    UNSUBSCRIBE: { type: 160 },
+    UNSUBACK: { type: 176 },
+    PINGREQ: { type: 192 },
+    PINGRESP: { type: 208 },
+    DISCONNECT: { type: 224 }
 }
 export enum flags {
     CONNACK_FLAG_WITH_USERNAME_PASSWORD = 194,

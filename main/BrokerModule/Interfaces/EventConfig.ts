@@ -13,5 +13,6 @@ export enum ReasonCode {
     WILL_FLAG_SET_BUT_NO_TOPIC_PAYLOAD = 5,
     BAD_CLIENT_ID = 2 ,
     SERVER_UNAVAILABLE = 3,
-    UN_ATHORIZED = 5
+    UN_ATHORIZED = 5,
+    MSG_NO_PAYLOAD = 6,
 }
