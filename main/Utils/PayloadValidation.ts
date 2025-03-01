@@ -29,7 +29,7 @@ export function validatePayload(target, methodName, propdes: PropertyDescriptor)
             this.state.reasonCode = ReasonCode.WILL_FLAG_SET_BUT_NO_TOPIC_PAYLOAD
         }
         this.state.request = plainPayload
-        return decoratingMethod.apply(this, plainPayload)
+        return decoratingMethod.apply(this, [plainPayload,{onDisk:this.diskConnection,inMemory:this.inMemory}])
     }
     return propdes
 }

@@ -31,6 +31,14 @@ export interface PacketStructure_Publish {
     identifier: Buffer | null
     payload: Buffer | null
 }
+export interface PacketStructure_Subscribe {
+    type: number,
+    remainingLength: number,
+    qos: number,
+    topicLen: number,
+    topic: Buffer | null,
+    identifier: Buffer | null
+}
 export let VaraiblesHex = {
     variableLength: Buffer.from([0x4, 0Xc2]),
     MQTTHEX: Buffer.from([0x4D, 51, 54, 54])

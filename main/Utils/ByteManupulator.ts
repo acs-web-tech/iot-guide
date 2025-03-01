@@ -38,13 +38,28 @@ export let bufferHexToDecimal = (buffer: Buffer): number => {
 
 export let generateRespone = function (type: number, errorType: null | number, socket) {
     let remainingLength = SUPPORTED_PACKETS.CONNACK.remainingLength
-    let connAckBuffer = Buffer.from([type, remainingLength, 0, errorType])
+    let AckBuffer = Buffer.from([type, remainingLength, 0, errorType])
     if (errorType > 0) {
-        socket.write(connAckBuffer)
+        socket.write(AckBuffer)
         socket.destroy()
         return;
     }
-    socket.write(connAckBuffer)
+    socket.write(AckBuffer)
+}
+export let generateResponePuback = function (type: number,identity, socket) {
+    let remainingLength = SUPPORTED_PACKETS.PUBACK.remainingLength
+    let AckBuffer = Buffer.from([type, remainingLength,...identity])
+    console.log("53",AckBuffer)
+    
+        socket.write(AckBuffer)
+    
+}
+export let generateResponeSuback = function (type: number,identity, socket) {
+    let remainingLength = SUPPORTED_PACKETS.SUBACK.remainingLength
+    let AckBuffer = Buffer.from([type, remainingLength,...identity,1])
+    console.log(AckBuffer)
+    socket.write(AckBuffer)
+    
 }
 
 let bufferToString = (buffer: Buffer): string => buffer.toString()
