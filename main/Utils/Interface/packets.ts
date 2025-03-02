@@ -28,8 +28,18 @@ export interface PacketStructure_Publish {
     retain: number,
     topicLen: number,
     topic: Buffer | null,
-    identifier: Buffer | null
+    identifier: Buffer | null | number
     payload: Buffer | null
+}
+export interface PacketStructure_PublishRelease {
+    type: number,
+    remainingLength: number,
+    identifier: Buffer | number | null
+}
+export interface PacketStructure_PublishReleaseAck {
+    type: number,
+    remainingLength:number,
+    identifier: Buffer | null | number
 }
 export interface PacketStructure_Subscribe {
     type: number,
@@ -37,7 +47,7 @@ export interface PacketStructure_Subscribe {
     qos: number,
     topicLen: number,
     topic: Buffer | null,
-    identifier: Buffer | null
+    identifier: Buffer | null | number
 }
 export let VaraiblesHex = {
     variableLength: Buffer.from([0x4, 0Xc2]),
