@@ -7,7 +7,8 @@ export function openDataBase(path: string): sqlite.Database {
 }
 export async function createTableDependency(dbconnection) {
     let filterTables = await showTables(dbconnection.inMemory)
-    if (!filterTables.includes("connection")) {
+    let defaults = filterTables.map((value) => value.name)
+    if (!defaults.includes("connection")) {
         let datastore_connection = dbconnection.inMemory.exec(`create table connection(
         client_id varchar,
         qos int , 
@@ -19,7 +20,7 @@ export async function createTableDependency(dbconnection) {
         start_time timestamp default current_timestamp
         )`)
     }
-    if (!filterTables.includes("subscription")) {
+    if (!defaults.includes("subscription")) {
         let datastore_subscription = dbconnection.inMemory.exec(`create table subscription(
             client_id varchar,
             identifier varchar,
@@ -27,7 +28,7 @@ export async function createTableDependency(dbconnection) {
             qos int
             )`)
     }
-    if (!filterTables.includes("publish")) {
+    if (!defaults.includes("publish")) {
         let datastore_publish = dbconnection.inMemory.exec(`create table publish(
         client_id varchar,
         identifier varchar,
@@ -48,6 +49,7 @@ export async function createTableDependency(dbconnection) {
     //     admin_id varchar
     //     )`)
     // }
+
 
 }
 

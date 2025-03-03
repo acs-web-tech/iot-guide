@@ -16,9 +16,18 @@ export async function insertData(data:Array<any>,dbconnection,where){
 export function select(connection,props,where,condition=[]) {
     return new Promise((resolve, reject) => {
         let result = connection.all(
-            `select ${props} from ${where}
-            ${condition.length>0?` where topic ='${condition[0]}' `:";"} `,
-            [], (err, rows) => {
+            `select ${props} from ${where} ${condition.length>0?` where topic =? `:";"} `,
+            condition, (err, rows) => {
+            if (!err) resolve(rows)
+            if (err) reject(err)
+        })
+    })
+}
+export function selectTopic(connection,props,where,condition=[]) {
+    return new Promise((resolve, reject) => {
+        let result = connection.all(
+            `select ${props} from ${where}  where topic =?  `,
+            condition, (err, rows) => {
             if (!err) resolve(rows)
             if (err) reject(err)
         })
