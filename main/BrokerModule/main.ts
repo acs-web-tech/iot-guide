@@ -93,15 +93,18 @@ export class BrokerEventHandler {
                          let topic = payload.topic.toString()
                          let cliendID = requestData.request.cliendID.toString()
                          connectionState.set(cliendID, socket)
-                         await processPublish(
-                              dbconnection.inMemory,
-                              responseType,
-                              EventData,
-                              topic,
-                              cliendID,
-                              payload,
-                              connectionState,
-                              socket)
+                         await processPublish.apply(this,
+                              [
+                                   dbconnection.inMemory,
+                                   responseType,
+                                   EventData,
+                                   topic,
+                                   cliendID,
+                                   payload,
+                                   connectionState,
+                                   socket
+                              ]
+                         )
                     }
                     break;
                case SUPPORTED_PACKETS.SUBSCRIBE.type:
