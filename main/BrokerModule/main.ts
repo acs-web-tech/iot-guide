@@ -125,11 +125,13 @@ export class BrokerEventHandler {
                case SUPPORTED_PACKETS.PUBREL.type:
                     requestData = this.state
                     payload = DestructurePayload_PublishRelease(EventData)
-                    await processPubRel(
+                    await processPubRel.apply(this,
+                         [
                          dbconnection.inMemory,
                          payload,
                          connectionState,
                          socket
+                         ]
                     )
                     break;
                case SUPPORTED_PACKETS.PUBACK.type:
