@@ -1,7 +1,7 @@
 import { SUPPORTED_PACKETS } from "../Interfaces/Enums"
 import { selectTopic, insertData } from "../../DBSqlite/crudOperations"
 import { deliverMessage } from "../../Utils/messageDeliveryQueue"
-import { generateResponePuback } from "main/Utils/ByteManupulator"
+import { generateResponePuback } from "../../Utils/ByteManupulator"
 export async function processPublish(dbconnection, responseType, receivedMessage, topic, cliendID, payload, connectionState, socket) {
     if (payload.qos == 1) {
         responseType = SUPPORTED_PACKETS.PUBACK.type
@@ -10,7 +10,7 @@ export async function processPublish(dbconnection, responseType, receivedMessage
         responseType = SUPPORTED_PACKETS.PUBREC.type
     }
     let subscribedClients: any = await selectTopic(
-        dbconnection.inMemory,
+        dbconnection,
         [
             "client_id",
             "topic",
@@ -24,7 +24,7 @@ export async function processPublish(dbconnection, responseType, receivedMessage
             subscribedClients,
             payload,
             receivedMessage,
-            dbconnection.inMemory,
+            dbconnection,
             connectionState
         )
     }
@@ -33,7 +33,7 @@ export async function processPublish(dbconnection, responseType, receivedMessage
             subscribedClients,
             payload,
             receivedMessage,
-            dbconnection.inMemory,
+            dbconnection,
             connectionState
         )
         generateResponePuback(responseType, payload.identifier, socket)
@@ -51,12 +51,12 @@ export async function processPublish(dbconnection, responseType, receivedMessage
                 payload.qos == 1 ? 1 : 0,
                 payload.qos == 1 || payload.qos == 0 ? 1 : 0
             ],
-            dbconnection.inMemory,
+            dbconnection,
             "publish"
         )
 
         subscribedClients.map((value) => {
-            this.subscriberDeliveryQueue.push({ cliendID, ack: 0 })
+            this.subscriberDeliveryQueue.push({ cliendID, topic:payload.topic, ack: 0 })
         })
         generateResponePuback(responseType, payload.identifier, socket)
     }

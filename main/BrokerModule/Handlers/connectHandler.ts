@@ -11,10 +11,10 @@ export async function processConnect(dbconnection, responseType, requestData, re
         requestData.aliveTime,
         null
     ],
-        dbconnection.inMemory,
+        dbconnection,
         "connection"
     )
-    let selectdata = await select(dbconnection.inMemory, ["*"], "connection")
+    let selectdata = await select(dbconnection, ["*"], "connection")
     return generateRespone(responseType, reason, socket)
 
 }

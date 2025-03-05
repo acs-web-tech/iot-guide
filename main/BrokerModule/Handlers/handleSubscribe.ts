@@ -11,6 +11,6 @@ export async function processSubscribe(dbconnection, responseType, clientID, pay
         dbconnection,
         "subscription"
     )
-    let selectdata = await select(dbconnection.inMemory, ["*"], "subscription")
+    let selectdata = await select(dbconnection, ["*"], "subscription")
     generateResponeSuback(responseType, payload.identifier, socket)
 } 

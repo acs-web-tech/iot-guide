@@ -34,9 +34,17 @@ export function selectTopic(connection,props,where,condition=[]) {
     })
 }
 // Don't use this in vital situations
-export function deleteData(connection,where,condition=[]) {
+export function deleteData(connection,condition=[],where) {
     return new Promise((resolve, reject) => {
-        let result = connection.all(`delete  from ${where} where identifier='${condition[0]}' `, condition, (err, rows) => {
+        let result = connection.all(`delete  from ${where} where topic=? and client_id=? `, condition, (err, rows) => {
+            if (!err) resolve(rows)
+            if (err) reject(err)
+        })
+    })
+}
+export function deleteDataByIdentifier(connection,condition=[],where) {
+    return new Promise((resolve, reject) => {
+        let result = connection.all(`delete  from ${where} where identifier=? `, condition, (err, rows) => {
             if (!err) resolve(rows)
             if (err) reject(err)
         })

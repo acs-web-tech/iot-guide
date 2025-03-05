@@ -49,6 +49,13 @@ export interface PacketStructure_Subscribe {
     topic: Buffer | null,
     identifier: Buffer | null | number
 }
+export interface PacketStructure_UnSubscribe {
+    type: number,
+    remainingLength: number,
+    topicLen: number,
+    topic: Buffer | null,
+    identifier: Buffer | null | number
+}
 export let VaraiblesHex = {
     variableLength: Buffer.from([0x4, 0Xc2]),
     MQTTHEX: Buffer.from([0x4D, 51, 54, 54])

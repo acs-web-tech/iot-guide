@@ -4,7 +4,7 @@ import { generateResponePuback } from "../../Utils/ByteManupulator"
 import { SUPPORTED_PACKETS } from "../Interfaces/Enums"
 export async function processPubRel(dbconnection, payload, connectionState, socket) {
     let updateStatus = await update(dbconnection, [1, payload.identifier])
-    let Message: any = await selectByID(dbconnection.inMemory, [
+    let Message: any = await selectByID(dbconnection, [
         "client_id",
         "topic",
         "payload"
@@ -13,7 +13,7 @@ export async function processPubRel(dbconnection, payload, connectionState, sock
         [payload.identifier]
     )
     let subscribedClients: any = await selectTopic(
-        dbconnection.inMemory,
+        dbconnection,
         [
             "client_id",
             "topic",
@@ -26,7 +26,7 @@ export async function processPubRel(dbconnection, payload, connectionState, sock
         subscribedClients,
         payload,
         Message[0].payload,
-        dbconnection.inMemory,
+        dbconnection,
         connectionState
     )
     generateResponePuback(SUPPORTED_PACKETS.PUBCOMP.type, payload.identifier, socket)

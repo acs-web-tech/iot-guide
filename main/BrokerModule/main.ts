@@ -7,6 +7,7 @@ import { PacketStructure } from "../Utils/Interface/packets";
 import { ReasonCode, ReasonCode_PUBACK } from "./Interfaces/EventConfig";
 import { TakeDecision } from "../Utils/getResponseType";
 import { DestructurePayload_Publish, DestructurePayload_PublishAck, DestructurePayload_PublishRelease } from "../Utils/publishPacket";
+import { DestructurePayload_UnSubscribe } from "../Utils/unsubscribePackets";
 import { DestructurePayload_Subscribe } from "../Utils/subscribePacket"
 import { bytesConsumed } from "../Utils/connectPacket";
 import { select, insertData, update, selectByID, selectTopic } from "../DBSqlite/crudOperations";
@@ -17,6 +18,7 @@ import { processPublish } from "./Handlers/handlePublish";
 import { processSubscribe } from "./Handlers/handleSubscribe";
 import { processPubRel } from "./Handlers/pubrelHandler";
 import { processPubAck } from "./Handlers/pubackHandler";
+import { processUnSubscribe } from "./Handlers/unsubscribeHandler";
 import * as sqlite from "sqlite3";
 let connectionState = new Map()
 export class BrokerEventHandler {
@@ -68,6 +70,7 @@ export class BrokerEventHandler {
                // 10 Represents connection packet
 
                case SUPPORTED_PACKETS.CONNECT.type:
+                    console.log("connected")
                     let action = await this.validateRequest(EventData, dbconnection)
                     let reason = this.state.reasonCode
                     let responseType = SUPPORTED_PACKETS.CONNACK.type
@@ -87,6 +90,7 @@ export class BrokerEventHandler {
                     generateRespone(responseType, 5, socket)
                     break;
                case SUPPORTED_PACKETS.PUBLISH.type:
+                    console.log("publish")
                     if (this.state.request.type == 16) {
                          payload = DestructurePayload_Publish(EventData)
                          let requestData = this.state
@@ -108,6 +112,7 @@ export class BrokerEventHandler {
                     }
                     break;
                case SUPPORTED_PACKETS.SUBSCRIBE.type:
+                    console.log("subscribe")
                     payload = DestructurePayload_Subscribe(EventData)
                     let requestData = this.state
                     let clientID = requestData.request.cliendID.toString()
@@ -123,6 +128,7 @@ export class BrokerEventHandler {
                          socket)
                     break;
                case SUPPORTED_PACKETS.PUBREL.type:
+                    console.log("pubrel")
                     requestData = this.state
                     payload = DestructurePayload_PublishRelease(EventData)
                     await processPubRel.apply(this,
@@ -135,6 +141,7 @@ export class BrokerEventHandler {
                     )
                     break;
                case SUPPORTED_PACKETS.PUBACK.type:
+                    console.log("puback")
                     requestData = this.state
                     payload = DestructurePayload_PublishAck(EventData)
                     await processPubAck.apply(this,
@@ -144,6 +151,23 @@ export class BrokerEventHandler {
                          ]
                     )
                     break;
+               case SUPPORTED_PACKETS.UNSUBSCRIBE.type:
+                    requestData = this.state
+                    clientID = requestData.request.cliendID.toString()
+                    payload = DestructurePayload_UnSubscribe(EventData)
+                    let identifier = payload.identifier
+                    await processUnSubscribe.apply(
+                         this,
+                         [
+                         dbconnection.inMemory,
+                         clientID,
+                         identifier,
+                         topic,
+                         socket
+                         ]
+                    )
+
+
           }
      }
 }

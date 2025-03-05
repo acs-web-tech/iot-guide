@@ -18,7 +18,7 @@ export let SUPPORTED_PACKETS = {
     SUBSCRIBE: { type: 128 },
     SUBACK: { type: 144, remainingLength: 3 },
     UNSUBSCRIBE: { type: 160 },
-    UNSUBACK: { type: 176 },
+    UNSUBACK: { type: 176 , remainingLength:2 },
     PINGREQ: { type: 192 },
     PINGRESP: { type: 208 },
     DISCONNECT: { type: 224 }

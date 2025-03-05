@@ -61,5 +61,12 @@ export let generateResponeSuback = function (type: number,identity, socket) {
     socket.write(AckBuffer)
     
 }
+export let generateResponeUnSuback = function (type: number,identity, socket) {
+    let remainingLength = SUPPORTED_PACKETS.UNSUBACK.remainingLength
+    let AckBuffer = Buffer.from([type, remainingLength,...identity])
+    console.log(AckBuffer)
+    socket.write(AckBuffer)
+    
+}
 
 let bufferToString = (buffer: Buffer): string => buffer.toString()
