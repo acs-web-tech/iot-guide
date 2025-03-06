@@ -1,4 +1,4 @@
-import { PacketStructure_Publish,PacketStructure_PublishRelease , PacketStructure_PublishReleaseAck} from "./Interface/packets";
+import { PacketStructure_Publish,PacketStructure_PublishRelease , PacketStructure_PublishReleaseAck ,PacketStructure_Comp} from "./Interface/packets";
 import { bytesConsumed } from "./connectPacket";
 export function DestructurePayload_Publish(buffer: Buffer) {
     let packets: PacketStructure_Publish = {
@@ -41,6 +41,19 @@ export function DestructurePayload_PublishRelease(buffer: Buffer) {
     packets.remainingLength = buffer.subarray(++cursor,cursor = willFitOneByte + cursor).length
     packets.identifier = buffer.subarray(cursor++)
     console.log(packets.identifier)
+    return packets
+}
+export function DestructurePayload_PublishComp(buffer: Buffer) {
+    let packets: PacketStructure_Comp = {
+        type: 0,
+        remainingLength:0,
+        identifier: Buffer.from([]) || null
+    }
+    let cursor = 0
+    packets.type = buffer[cursor]
+    let willFitOneByte = bytesConsumed(buffer.byteLength)
+    packets.remainingLength = buffer.subarray(++cursor,cursor = cursor+willFitOneByte).byteLength
+    packets.identifier = buffer.subarray(cursor)
     return packets
 }
 export function DestructurePayload_PublishAck(buffer: Buffer) {

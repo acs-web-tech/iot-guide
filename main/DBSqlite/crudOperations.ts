@@ -33,6 +33,16 @@ export function selectTopic(connection,props,where,condition=[]) {
         })
     })
 }
+export function selectByIdentifier(connection,props,where,condition=[]) {
+    return new Promise((resolve, reject) => {
+        let result = connection.all(
+            `select ${props} from ${where}  where identifier =?  `,
+            condition, (err, rows) => {
+            if (!err) resolve(rows)
+            if (err) reject(err)
+        })
+    })
+}
 // Don't use this in vital situations
 export function deleteData(connection,condition=[],where) {
     return new Promise((resolve, reject) => {

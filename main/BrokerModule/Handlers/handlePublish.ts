@@ -56,7 +56,7 @@ export async function processPublish(dbconnection, responseType, receivedMessage
         )
 
         subscribedClients.map((value) => {
-            this.subscriberDeliveryQueue.push({ cliendID, topic:payload.topic, ack: 0 })
+            this.subscriberDeliveryQueue.push({ cliendID, topic:payload.topic, qos: payload.qos , identifier:payload.identifier })
         })
         generateResponePuback(responseType, payload.identifier, socket)
     }

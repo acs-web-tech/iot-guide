@@ -36,6 +36,11 @@ export interface PacketStructure_PublishRelease {
     remainingLength: number,
     identifier: Buffer | number | null
 }
+export interface PacketStructure_Comp {
+    type: number,
+    remainingLength: number,
+    identifier: Buffer | number | null
+}
 export interface PacketStructure_PublishReleaseAck {
     type: number,
     remainingLength:number,
