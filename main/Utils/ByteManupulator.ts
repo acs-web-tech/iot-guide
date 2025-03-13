@@ -54,6 +54,13 @@ export let generateResponePuback = function (type: number,identity, socket) {
         socket.write(AckBuffer)
     
 }
+export let generateResponePing = function (type: number,identity, socket) {
+    let AckBuffer = Buffer.from([type, identity])
+    console.log("53",AckBuffer)
+    
+        socket.write(AckBuffer)
+    
+}
 export let generateResponeSuback = function (type: number,identity, socket) {
     let remainingLength = SUPPORTED_PACKETS.SUBACK.remainingLength
     let AckBuffer = Buffer.from([type, remainingLength,...identity,1])

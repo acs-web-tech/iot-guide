@@ -2,7 +2,7 @@ import { insertData, select } from "../../DBSqlite/crudOperations"
 import { generateRespone } from "../../Utils/ByteManupulator"
 export async function processConnect(dbconnection, responseType, requestData, reason, socket) {
     let statusInsert = await insertData([
-        requestData.cliendID,
+        requestData.cliendID.toString(),
         requestData.qos,
         requestData.retain,
         requestData.willMessageLen > 0 ? 1 : 0,
