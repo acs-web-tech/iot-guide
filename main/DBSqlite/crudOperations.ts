@@ -63,7 +63,6 @@ export function deleteDataByIdentifier(connection,condition=[],where) {
 export function showTables(connection):Promise<Array<any>> {
     return new Promise((resolve, reject) => {
         let result = connection.all("SELECT name FROM sqlite_master WHERE type='table';", [], (err, rows) => {
-            
             if (!err) resolve(rows)
             if (err) reject(err)
         })
@@ -80,14 +79,6 @@ export function update(connection,condition=[]):Promise<Array<any>> {
 export function selectByID(connection,props,where,condition=[]):Promise<Array<any>> {
     return new Promise((resolve, reject) => {
         let result = connection.all(`select ${props} from ${where} where identifier=? `, condition, (err, rows) => {
-            if (!err) resolve(rows)
-            if (err) reject(err)
-        })
-    })
-}
-export function selectByClientId(connection,props,where,condition=[]):Promise<Array<any>> {
-    return new Promise((resolve, reject) => {
-        let result = connection.all(`select ${props} from ${where} where client_id=? `, condition, (err, rows) => {
             if (!err) resolve(rows)
             if (err) reject(err)
         })

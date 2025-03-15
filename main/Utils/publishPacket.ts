@@ -21,6 +21,7 @@ export function DestructurePayload_Publish(buffer: Buffer) {
     packets.remainingLength = buffer.subarray(++cursor, cursor = cursor + willFitOneByte).length
     packets.topicLen = buffer[cursor] + buffer[++cursor]
     packets.topic = buffer.subarray(++cursor, cursor = packets.topicLen + cursor++)
+    console.log(packets.topic.toString())
     // check MSB for Message Identifier is within the limit
     packets.identifier = buffer.subarray(cursor++, ++cursor)
    // packets.identifier = parseInt(packets.identifier.toString("hex"),16)
@@ -39,6 +40,7 @@ export function DestructurePayload_PublishRelease(buffer: Buffer) {
     let willFitOneByte = bytesConsumed(buffer.byteLength)
     packets.remainingLength = buffer.subarray(++cursor,cursor = willFitOneByte + cursor).length
     packets.identifier = buffer.subarray(cursor++)
+    console.log(packets.identifier)
     return packets
 }
 export function DestructurePayload_PublishComp(buffer: Buffer) {
@@ -63,6 +65,7 @@ export function DestructurePayload_PublishAck(buffer: Buffer) {
     let cursor = 0
     packets.type = buffer[cursor]
     let willFitOneByte = bytesConsumed(buffer.byteLength)
+    console.log("54",willFitOneByte)
     packets.remainingLength = buffer.subarray(++cursor,cursor = cursor+willFitOneByte).byteLength
     packets.identifier = buffer.subarray(cursor)
     return packets

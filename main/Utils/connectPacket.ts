@@ -49,6 +49,7 @@ export function connect_Payload(buffer: Buffer) {
     packets.username = buffer.subarray(cursor, cursor = cursor + packets.usernameLen)
     packets.passwordLen = buffer[cursor++] + buffer[cursor++]
     packets.password = buffer.subarray(cursor, cursor + packets.passwordLen)
+    console.log(packets.cliendID.toString())
     return packets
 }
 export let bytesConsumed = (totalLength: number): number => {

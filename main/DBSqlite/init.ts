@@ -40,14 +40,6 @@ export async function createTableDependency(dbconnection) {
         is_completed int
         )`)
     }
-    if(!defaults.includes("qos_2_pending_list")){
-        let datastore_publish = dbconnection.inMemory.exec(`create table qos_2_pending_list (
-            client_id varchar,
-            identifier varchar,
-            topic varchar,
-            payload blob
-            )`)
-    }
     // if (!filterTables.includes("clients")) {
     //     let datastore_client = dbconnection.onDisk.exec(`create table clients(
     //     client_id varchar,
