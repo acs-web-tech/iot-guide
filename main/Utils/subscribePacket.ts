@@ -17,7 +17,6 @@ export function DestructurePayload_Subscribe(buffer: Buffer) {
     packets.topicLen = buffer[cursor]+buffer[++cursor]
     packets.topic = buffer.subarray(++cursor,cursor = cursor + packets.topicLen)
     packets.qos = buffer[cursor]
-    console.log(packets,packets.topic.toString())
     // check MSB for Message Identifier is within the limit
     return packets
 

@@ -7,7 +7,8 @@ export async function processPubRel(dbconnection, payload, connectionState, sock
     let Message: any = await selectByID(dbconnection, [
         "client_id",
         "topic",
-        "payload"
+        "payload",
+        "qos"
     ],
         "publish",
         [payload.identifier]
@@ -25,6 +26,7 @@ export async function processPubRel(dbconnection, payload, connectionState, sock
     deliverMessage(
         subscribedClients,
         payload,
+        Message[0].qos,
         Message[0].payload,
         dbconnection,
         connectionState

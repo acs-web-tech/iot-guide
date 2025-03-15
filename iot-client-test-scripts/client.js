@@ -1,7 +1,7 @@
 //Import the mqtt library
 const mqtt = require('mqtt');
 //define the broker address
-const brokerurl = "mqtt://192.168.1.4";
+const brokerurl = "mqtt://54.92.167.118";
 //define the topic where you want to publish the data
 const topic = 'test/topic';
 //create a client and connect it to broker
@@ -12,9 +12,8 @@ client.on('connect', () => {
     console.log("Client is connected");
 
     //data to be published
-    const message = Buffer.from("Hello, MQTT", "utf-8");
+    const message = Buffer.from("Hello, MQTT hello world", "utf-8");
     //sending data to the topic\
-   
     client.on("message",(packet)=>{
         console.log("packet recived",packet)
     })
@@ -22,8 +21,7 @@ client.on('connect', () => {
         if(err){
         console.log(err)
        }
-       console.log("subscribed ")
-       client.publish(topic, message,{qos:2,retain:true},(err) => {
+       client.publish(topic, message,{qos:1,retain:true},(err) => {
         console.log(err)
         if (!err) {
             console.log(`Message "${message}" published to topic "${topic}" `);
@@ -35,15 +33,21 @@ client.on('connect', () => {
        
         //client.end();
     })
+    // // client.unsubscribe("test/topic",(err)=>{
+    // //     if(!err){
+    // //         console.log("unsubscribed")
+    // //     }
+    // // })
     })
     client.on("packetreceive",(event)=>{
-        console.log(event)
+        console.log("rec",event)
     })
     client.on("packetsend",(event)=>{
         console.log(event)
     })
    
 })
+
 
 //Event handlers for errors
 client.on('error', (err) => {
