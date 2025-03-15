@@ -11,7 +11,6 @@ export function validatePayload(target, methodName, propdes: PropertyDescriptor)
             this.state.reject = true
             this.state.reasonCode = ReasonCode.NO_USERNAME_PASSWORD_FOUND
         }
-        console.log((((plainPayload.flags) >> 3) & 0b11))
         if ((((plainPayload.flags) >> 3) & 0b11) > 3) {
             this.state.reject = true
             this.state.reasonCode = ReasonCode.UNSUPPORTED_QOS_LEVEL

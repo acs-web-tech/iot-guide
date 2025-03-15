@@ -23,6 +23,7 @@ export async function processPublish(dbconnection, responseType, receivedMessage
         deliverMessage(
             subscribedClients,
             payload,
+            payload.qos,
             receivedMessage,
             dbconnection,
             connectionState
@@ -32,6 +33,7 @@ export async function processPublish(dbconnection, responseType, receivedMessage
         deliverMessage(
             subscribedClients,
             payload,
+            payload.qos,
             receivedMessage,
             dbconnection,
             connectionState

@@ -1,7 +1,6 @@
 import { insertData, select } from "../../DBSqlite/crudOperations"
 import { generateResponeSuback } from "../../Utils/ByteManupulator"
 export async function processSubscribe(dbconnection, responseType, clientID, payload, topic, connectionState, socket) {
-    console.log("4",clientID)
     let insertStatus = await insertData(
         [
             clientID,

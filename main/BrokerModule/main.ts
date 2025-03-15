@@ -20,6 +20,7 @@ import { processPubRel } from "./Handlers/pubrelHandler";
 import { processPubAck } from "./Handlers/pubackHandler";
 import { processUnSubscribe } from "./Handlers/unsubscribeHandler";
 import { processPubComp } from "./Handlers/handlePubComp";
+import { processPending } from "./Handlers/handlePending";
 import * as sqlite from "sqlite3";
 let connectionState = new Map()
 export class BrokerEventHandler {
@@ -71,16 +72,15 @@ export class BrokerEventHandler {
                // 10 Represents connection packet
 
                case SUPPORTED_PACKETS.CONNECT.type:
-                    console.log("connected")
                     let action = await this.validateRequest(EventData, dbconnection)
                     let reason = this.state.reasonCode
                     let responseType = SUPPORTED_PACKETS.CONNACK.type
                     let keepAlive = this.state.request.keepAlive
                     let cliendID = this.state.request.cliendID.toString()
-                    console.log("conn",cliendID)
                     // Error generation function required to replace these code
                     if (action && !this.state.reject) {
                          let requestData = this.state.request
+                         connectionState.set(cliendID, socket)
                          let process = await processConnect(
                               dbconnection.inMemory,
                               responseType,
@@ -88,12 +88,16 @@ export class BrokerEventHandler {
                               reason,
                               socket
                          )
-                         connectionState.set(cliendID, socket)
+                         let checkPendingMessage = await processPending(
+                              dbconnection.inMemory,
+                              cliendID,
+                              connectionState
+                         )
+                        
                     }
                     validateConnection(responseType, reason, socket)
                     break;
                case SUPPORTED_PACKETS.PUBLISH.type:
-                    console.log("publish")
                     if (this.state.request.type == 16) {
                          payload = DestructurePayload_Publish(EventData)
                          let requestData = this.state
@@ -114,13 +118,11 @@ export class BrokerEventHandler {
                     }
                     break;
                case SUPPORTED_PACKETS.SUBSCRIBE.type:
-                    console.log("subscribe")
                     payload = DestructurePayload_Subscribe(EventData)
                     let requestData = this.state
                     let topic = payload.topic.toString()
                     responseType = SUPPORTED_PACKETS.SUBACK.type
                     cliendID = requestData.request.cliendID.toString()
-                    console.log("121",cliendID)
                     await processSubscribe(
                          dbconnection.inMemory,
                          responseType, 
@@ -131,7 +133,6 @@ export class BrokerEventHandler {
                          socket)
                     break;
                case SUPPORTED_PACKETS.PUBREL.type:
-                    console.log("pubrel")
                     requestData = this.state
                     payload = DestructurePayload_PublishRelease(EventData)
                     await processPubRel.apply(this,
@@ -144,7 +145,6 @@ export class BrokerEventHandler {
                     )
                     break;
                case SUPPORTED_PACKETS.PUBACK.type:
-                    console.log("puback")
                     requestData = this.state
                     payload = DestructurePayload_PublishAck(EventData)
                     await processPubAck.apply(this,
@@ -189,10 +189,11 @@ export class BrokerEventHandler {
                     generateResponePing(SUPPORTED_PACKETS.PINGRESP.type,keepAlive,socket)
                     break;
                case SUPPORTED_PACKETS.DISCONNECT.type:
-                   connectionState.delete(cliendID)
+                   //connectionState.delete(cliendID)
                     socket.destroy()
                     break;
 
           }
      }
+
 }
