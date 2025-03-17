@@ -17,6 +17,7 @@ export function validatePayload(target, methodName, propdes: PropertyDescriptor)
         }
         if (plainPayload.protocolLevel != 4) {
             this.state.reject = true
+            console.log(plainPayload.protocolLevel)
             this.state.reasonCode = ReasonCode.UNSUPPORTED_PROTOCOL_VERSION
         }
         if (!plainPayload.willMessage) {

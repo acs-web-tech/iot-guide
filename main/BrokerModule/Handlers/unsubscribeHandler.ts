@@ -2,10 +2,12 @@ import { deleteData, select } from "../../DBSqlite/crudOperations"
 import { generateResponeUnSuback } from "../../Utils/ByteManupulator"
 import { SUPPORTED_PACKETS } from "../Interfaces/Enums"
 export async function processUnSubscribe(dbconnection, clientID, identifier, topic, socket) {
-    let deleteStatus = await deleteData(dbconnection,
+    let deleteStatus = await deleteData(
+        dbconnection,
         [
-            clientID,
-            topic
+            topic,
+            clientID
+            
         ],
         "subscription"
     )

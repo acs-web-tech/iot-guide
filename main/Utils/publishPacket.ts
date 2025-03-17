@@ -67,3 +67,16 @@ export function DestructurePayload_PublishAck(buffer: Buffer) {
     packets.identifier = buffer.subarray(cursor)
     return packets
 }
+export function DestructurePayload_PubRec(buffer: Buffer) {
+    let packets: PacketStructure_PublishReleaseAck = {
+        type: 0,
+        remainingLength:0,
+        identifier: Buffer.from([]) || null
+    }
+    let cursor = 0
+    packets.type = buffer[cursor]
+    let willFitOneByte = bytesConsumed(buffer.byteLength)
+    packets.remainingLength = buffer.subarray(++cursor,cursor = cursor+willFitOneByte).byteLength
+    packets.identifier = buffer.subarray(cursor)
+    return packets
+}

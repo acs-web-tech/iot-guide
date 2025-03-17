@@ -23,6 +23,7 @@ export async function processPubRel(dbconnection, payload, connectionState, sock
         "subscription",
         [Message[0].topic.toString()]
     )
+    console.log("subs",subscribedClients)
     deliverMessage(
         subscribedClients,
         payload,

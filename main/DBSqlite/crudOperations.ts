@@ -3,9 +3,9 @@ export function createTable(connection,tablename){
       let checkTableExisits = connection.inMemory.exec("show tables") 
 }
 export async function insertData(data:Array<any>,dbconnection,where){
-    return new Promise((resolve,reject)=>{
+    return new Promise(async (resolve,reject)=>{
         let lengthOfPrecedence = data.map((value)=>"?")
-        let insertStatus = dbconnection.run(`insert into ${where} values(${lengthOfPrecedence})`,data,(err,rows)=>{
+        let insertStatus = await dbconnection.run(`insert into ${where} values(${lengthOfPrecedence})`,data,(err,rows)=>{
             if(!err)resolve(rows)
             if(err)reject(err)
         })
@@ -14,8 +14,8 @@ export async function insertData(data:Array<any>,dbconnection,where){
 }
 
 export function select(connection,props,where,condition=[]) {
-    return new Promise((resolve, reject) => {
-        let result = connection.all(
+    return new Promise(async (resolve, reject) => {
+        let result = await connection.all(
             `select ${props} from ${where} ${condition.length>0?` where topic =? `:";"} `,
             condition, (err, rows) => {
             if (!err) resolve(rows)
@@ -24,8 +24,8 @@ export function select(connection,props,where,condition=[]) {
     })
 }
 export function selectTopic(connection,props,where,condition=[]) {
-    return new Promise((resolve, reject) => {
-        let result = connection.all(
+    return new Promise(async (resolve, reject) => {
+        let result = await connection.all(
             `select ${props} from ${where}  where topic =?  `,
             condition, (err, rows) => {
             if (!err) resolve(rows)
@@ -34,8 +34,8 @@ export function selectTopic(connection,props,where,condition=[]) {
     })
 }
 export function selectByIdentifier(connection,props,where,condition=[]) {
-    return new Promise((resolve, reject) => {
-        let result = connection.all(
+    return new Promise(async (resolve, reject) => {
+        let result =await connection.all(
             `select ${props} from ${where}  where identifier =?  `,
             condition, (err, rows) => {
             if (!err) resolve(rows)
@@ -45,24 +45,25 @@ export function selectByIdentifier(connection,props,where,condition=[]) {
 }
 // Don't use this in vital situations
 export function deleteData(connection,condition=[],where) {
-    return new Promise((resolve, reject) => {
-        let result = connection.all(`delete  from ${where} where topic=? and client_id=? `, condition, (err, rows) => {
+    return new Promise(async (resolve, reject) => {
+        let result = await connection.all(`delete  from ${where} where topic=? and client_id=? `, condition, (err, rows) => {
+            console.log(rows)
             if (!err) resolve(rows)
             if (err) reject(err)
         })
     })
 }
 export function deleteDataByIdentifier(connection,condition=[],where) {
-    return new Promise((resolve, reject) => {
-        let result = connection.all(`delete  from ${where} where identifier=? `, condition, (err, rows) => {
+    return new Promise(async (resolve, reject) => {
+        let result = await connection.all(`delete  from ${where} where identifier=? `, condition, (err, rows) => {
             if (!err) resolve(rows)
             if (err) reject(err)
         })
     })
 }
 export function showTables(connection):Promise<Array<any>> {
-    return new Promise((resolve, reject) => {
-        let result = connection.all("SELECT name FROM sqlite_master WHERE type='table';", [], (err, rows) => {
+    return new Promise(async (resolve, reject) => {
+        let result = await connection.all("SELECT name FROM sqlite_master WHERE type='table';", [], (err, rows) => {
             
             if (!err) resolve(rows)
             if (err) reject(err)
@@ -70,24 +71,24 @@ export function showTables(connection):Promise<Array<any>> {
     })
 }
 export function update(connection,condition=[]):Promise<Array<any>> {
-    return new Promise((resolve, reject) => {
-        let result = connection.all("update publish set got_pub_rel=? where  identifier=? ", condition, (err, rows) => {
+    return new Promise(async (resolve, reject) => {
+        let result = await connection.all("update publish set got_pub_rel=? where  identifier=? ", condition, (err, rows) => {
             if (!err) resolve(rows)
             if (err) reject(err)
         })
     })
 }
 export function selectByID(connection,props,where,condition=[]):Promise<Array<any>> {
-    return new Promise((resolve, reject) => {
-        let result = connection.all(`select ${props} from ${where} where identifier=? `, condition, (err, rows) => {
+    return new Promise(async (resolve, reject) => {
+        let result = await connection.all(`select ${props} from ${where} where identifier=? `, condition, (err, rows) => {
             if (!err) resolve(rows)
             if (err) reject(err)
         })
     })
 }
 export function selectByClientId(connection,props,where,condition=[]):Promise<Array<any>> {
-    return new Promise((resolve, reject) => {
-        let result = connection.all(`select ${props} from ${where} where client_id=? `, condition, (err, rows) => {
+    return new Promise(async (resolve, reject) => {
+        let result = await connection.all(`select ${props} from ${where} where client_id=? `, condition, (err, rows) => {
             if (!err) resolve(rows)
             if (err) reject(err)
         })

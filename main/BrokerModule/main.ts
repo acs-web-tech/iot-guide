@@ -6,7 +6,7 @@ import { Request_State } from "./Interfaces/EventConfig";
 import { PacketStructure } from "../Utils/Interface/packets";
 import { ReasonCode, ReasonCode_PUBACK } from "./Interfaces/EventConfig";
 import { TakeDecision } from "../Utils/getResponseType";
-import { DestructurePayload_Publish, DestructurePayload_PublishAck, DestructurePayload_PublishRelease, DestructurePayload_PublishComp } from "../Utils/publishPacket";
+import { DestructurePayload_Publish, DestructurePayload_PubRec, DestructurePayload_PublishAck, DestructurePayload_PublishRelease, DestructurePayload_PublishComp } from "../Utils/publishPacket";
 import { DestructurePayload_UnSubscribe } from "../Utils/unsubscribePackets";
 import { DestructurePayload_Subscribe } from "../Utils/subscribePacket"
 import { bytesConsumed } from "../Utils/connectPacket";
@@ -48,6 +48,7 @@ export class BrokerEventHandler {
      public static async validateRequest(payload: Buffer, dbconnection): Promise<boolean | null> {
           let password = this.state.request.password.toString()
           let username = this.state.request.username.toString()
+          console.log(username,password)
           let credentials_from_db: any = await select(dbconnection.onDisk, ["username", "password"], "clients")
           credentials_from_db = credentials_from_db[0] ?? null
           if (credentials_from_db != null && username == credentials_from_db.username && credentials_from_db.password == password) {
@@ -123,6 +124,7 @@ export class BrokerEventHandler {
                     let topic = payload.topic.toString()
                     responseType = SUPPORTED_PACKETS.SUBACK.type
                     cliendID = requestData.request.cliendID.toString()
+                    console.log("sub init",cliendID,payload)
                     await processSubscribe(
                          dbconnection.inMemory,
                          responseType, 
@@ -143,6 +145,12 @@ export class BrokerEventHandler {
                               socket
                          ]
                     )
+                    break;
+               case SUPPORTED_PACKETS.PUBREC.type:
+                    console.log("rec",EventData)
+                    payload = DestructurePayload_PubRec(EventData)
+                    console.log(payload.identifier)
+                    socket.write(Buffer.from([98,0x2,payload.identifier]))
                     break;
                case SUPPORTED_PACKETS.PUBACK.type:
                     requestData = this.state
@@ -170,10 +178,12 @@ export class BrokerEventHandler {
                     )
                     break;
                case SUPPORTED_PACKETS.UNSUBSCRIBE.type:
+                    console.log("unsub")
                     requestData = this.state
                     payload = DestructurePayload_UnSubscribe(EventData)
                     let identifier = payload.identifier
                     cliendID = requestData.request.cliendID.toString()
+                    topic = payload.topic.toString()
                     await processUnSubscribe.apply(
                          this,
                          [
@@ -184,6 +194,8 @@ export class BrokerEventHandler {
                               socket
                          ]
                     )
+                    let del = await selectTopic(dbconnection.inMemory,["topic","client_id"],"subscription",[topic])
+                    console.log("del",del)
                     break;
                case SUPPORTED_PACKETS.PINGREQ.type:
                     generateResponePing(SUPPORTED_PACKETS.PINGRESP.type,keepAlive,socket)

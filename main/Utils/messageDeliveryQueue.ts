@@ -1,10 +1,9 @@
 import { deleteDataByIdentifier,insertData } from "../DBSqlite/crudOperations"
 export  function deliverMessage(deliveryQueue: Array<any>, payload,qos=null,message, dbconnection, socketQueue: Map<any, any>) {
     deliveryQueue.forEach(async (value, index) => {
+        console.log(value)
         let socket = socketQueue.get(value.client_id.toString())
-        if(!socket.destroyed){
         socket.write(message)
-        }
         if(socket.destroyed && qos == 2){
             let addPendingList = await insertData([
                 value.client_id,
