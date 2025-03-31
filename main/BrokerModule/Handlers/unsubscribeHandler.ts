@@ -1,5 +1,6 @@
 import { deleteData, select } from "../../DBSqlite/crudOperations"
 import { generateResponeUnSuback } from "../../Utils/ByteManupulator"
+import { selectTopic } from "../../DBSqlite/crudOperations"
 import { SUPPORTED_PACKETS } from "../Interfaces/Enums"
 export async function processUnSubscribe(dbconnection, clientID, identifier, topic, socket) {
     let deleteStatus = await deleteData(

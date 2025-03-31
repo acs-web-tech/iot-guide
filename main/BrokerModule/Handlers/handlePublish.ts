@@ -56,10 +56,14 @@ export async function processPublish(dbconnection, responseType, receivedMessage
             dbconnection,
             "publish"
         )
-
         subscribedClients.map((value) => {
             this.subscriberDeliveryQueue.push({ cliendID, topic:payload.topic, qos: payload.qos , identifier:payload.identifier })
         })
-        generateResponePuback(responseType, payload.identifier, socket)
+        //socket.write(Buffer.from([SUPPORTED_PACKETS.PUBREC.type,0x02,...payload.identifier]))
+        generateResponePuback(SUPPORTED_PACKETS.PUBREC.type, payload.identifier, socket)
+    }
+    if(payload.retain){
+        let insertRetain = await insertData([cliendID,payload.identifier,topic,receivedMessage],dbconnection,"retain_messages")
+        let retain_messages:any = await selectTopic(dbconnection,["*"],"retain_messages",[topic])
     }
 }

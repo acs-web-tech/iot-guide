@@ -10,7 +10,6 @@ export async function insertData(data:Array<any>,dbconnection,where){
             if(err)reject(err)
         })
     })
-  
 }
 
 export function select(connection,props,where,condition=[]) {
@@ -47,7 +46,7 @@ export function selectByIdentifier(connection,props,where,condition=[]) {
 export function deleteData(connection,condition=[],where) {
     return new Promise(async (resolve, reject) => {
         let result = await connection.all(`delete  from ${where} where topic=? and client_id=? `, condition, (err, rows) => {
-            console.log(rows)
+            console.log(err)
             if (!err) resolve(rows)
             if (err) reject(err)
         })
@@ -59,6 +58,7 @@ export function deleteDataByIdentifier(connection,condition=[],where) {
             if (!err) resolve(rows)
             if (err) reject(err)
         })
+
     })
 }
 export function showTables(connection):Promise<Array<any>> {
@@ -87,6 +87,15 @@ export function selectByID(connection,props,where,condition=[]):Promise<Array<an
     })
 }
 export function selectByClientId(connection,props,where,condition=[]):Promise<Array<any>> {
+    return new Promise(async (resolve, reject) => {
+        let result = await connection.all(`select ${props} from ${where} where client_id=? and topic=? `, condition, (err, rows) => {
+            if (!err) resolve(rows)
+            if (err) reject(err)
+        })
+    })
+}
+
+export function selectByClientIdOnly(connection,props,where,condition=[]):Promise<Array<any>> {
     return new Promise(async (resolve, reject) => {
         let result = await connection.all(`select ${props} from ${where} where client_id=? `, condition, (err, rows) => {
             if (!err) resolve(rows)

@@ -8,7 +8,6 @@ export function openDataBase(path: string): sqlite.Database {
 export async function createTableDependency(dbconnection) {
     let filterTables = await showTables(dbconnection.inMemory)
     let defaults = filterTables.map((value) => value.name)
-    console.log("filter",filterTables)
     if (!defaults.includes("connection")) {
         let datastore_connection = dbconnection.inMemory.exec(`create table connection(
         client_id varchar,
@@ -43,6 +42,14 @@ export async function createTableDependency(dbconnection) {
     }
     if(!defaults.includes("qos_2_pending_list")){
         let datastore_publish = dbconnection.inMemory.exec(`create table qos_2_pending_list (
+            client_id varchar,
+            identifier varchar,
+            topic varchar,
+            payload blob
+            )`)
+    }
+    if(!defaults.includes("retain_messages")){
+        let datastore_publish = dbconnection.inMemory.exec(`create table retain_messages (
             client_id varchar,
             identifier varchar,
             topic varchar,

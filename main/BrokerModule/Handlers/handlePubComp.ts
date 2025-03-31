@@ -14,6 +14,7 @@ export async function processPubComp(dbconnection, cliendID, payload, connection
     }
     if(avaliableSubscribers.length<=0){
          let deleteStatus = await  deleteDataByIdentifier(dbconnection,["identifier"],"publish")
+         
     }
 
 }

@@ -48,7 +48,7 @@ export let generateRespone = function (type: number, errorType: null | number, s
 }
 export let generateResponePuback = function (type: number,identity, socket) {
     let remainingLength = SUPPORTED_PACKETS.PUBACK.remainingLength
-    let AckBuffer = Buffer.from([type, remainingLength,...identity])
+    let AckBuffer = Buffer.from([type, 0x02,...identity])
         socket.write(AckBuffer)
     
 }

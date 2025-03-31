@@ -1,6 +1,6 @@
 import EventConfig from "./Interfaces/BrokerEvent";
 import { SUPPORTED_PACKETS } from "./Interfaces/Enums";
-import { ExtractUnamePassword, DestructurePayload, generateRespone, generateResponePuback, generateResponeSuback , generateResponePing } from "../Utils/ByteManupulator";
+import { ExtractUnamePassword, DestructurePayload, generateRespone, generateResponePuback, generateResponeSuback, generateResponePing } from "../Utils/ByteManupulator";
 import { validatePayload, validatePublish } from "../Utils/PayloadValidation";
 import { Request_State } from "./Interfaces/EventConfig";
 import { PacketStructure } from "../Utils/Interface/packets";
@@ -21,34 +21,27 @@ import { processPubAck } from "./Handlers/pubackHandler";
 import { processUnSubscribe } from "./Handlers/unsubscribeHandler";
 import { processPubComp } from "./Handlers/handlePubComp";
 import { processPending } from "./Handlers/handlePending";
+import { processPubRec } from "./Handlers/handlePubRec";
 import * as sqlite from "sqlite3";
+import * as net from "net"
 let connectionState = new Map()
 export class BrokerEventHandler {
-     private EventState: Object = new Object();
-     private Activities = new Map();
-     public static eventData: Buffer;
      public static state: any = { reject: false, reasonCode: 0, request: {}, socket: {} };
      public static publishHandlerCallback: Function | null = null
      public static subscribeHandlerCallback: Function | null = null
      public static diskConnection: sqlite.Database | null = null
+     public static inMemory;
      public static memoeryConnection: sqlite.Database | null = null
      public static subscriberDeliveryQueue = []
      public static publisherQueue = []
+     public static eventData
      constructor() {
-
-     }
-     // Start1: Validations are still to be extended
-     public static emit<EventConfig>(EventData, socket) {
-          console.log(EventData)
-     }
-     private addConnection(timeStamp: Date, cliendID: string) {
 
      }
      @validatePayload
      public static async validateRequest(payload: Buffer, dbconnection): Promise<boolean | null> {
           let password = this.state.request.password.toString()
           let username = this.state.request.username.toString()
-          console.log(username,password)
           let credentials_from_db: any = await select(dbconnection.onDisk, ["username", "password"], "clients")
           credentials_from_db = credentials_from_db[0] ?? null
           if (credentials_from_db != null && username == credentials_from_db.username && credentials_from_db.password == password) {
@@ -64,23 +57,23 @@ export class BrokerEventHandler {
           return publishProcess
      }
 
-     public static async emitPayload<EventConfig>(EventData, socket, dbconnection) {
+     public static async emitPayload<EventConfig>(EventData, socket, dbconnection, state) {
+          let payload;
           this.eventData = EventData
           this.diskConnection = dbconnection.onDisk
-          this.memoeryConnection = dbconnection.inMemory
-          let payload;
+          this.inMemory = dbconnection.inMemory
           switch ((EventData[0] & ~((1 << 4) - 1))) {
                // 10 Represents connection packet
-
                case SUPPORTED_PACKETS.CONNECT.type:
                     let action = await this.validateRequest(EventData, dbconnection)
                     let reason = this.state.reasonCode
                     let responseType = SUPPORTED_PACKETS.CONNACK.type
                     let keepAlive = this.state.request.keepAlive
                     let cliendID = this.state.request.cliendID.toString()
+                    socket.state = this.state.request
                     // Error generation function required to replace these code
                     if (action && !this.state.reject) {
-                         let requestData = this.state.request
+                         let requestData = socket.state
                          connectionState.set(cliendID, socket)
                          let process = await processConnect(
                               dbconnection.inMemory,
@@ -89,21 +82,15 @@ export class BrokerEventHandler {
                               reason,
                               socket
                          )
-                         let checkPendingMessage = await processPending(
-                              dbconnection.inMemory,
-                              cliendID,
-                              connectionState
-                         )
-                        
+
                     }
                     validateConnection(responseType, reason, socket)
                     break;
                case SUPPORTED_PACKETS.PUBLISH.type:
                     if (this.state.request.type == 16) {
                          payload = DestructurePayload_Publish(EventData)
-                         let requestData = this.state
                          let topic = payload.topic.toString()
-                         cliendID = requestData.request.cliendID.toString()
+                         cliendID = socket.state.cliendID.toString()
                          await processPublish.apply(this,
                               [
                                    dbconnection.inMemory,
@@ -113,29 +100,32 @@ export class BrokerEventHandler {
                                    cliendID,
                                    payload,
                                    connectionState,
-                                   socket
+                                   socket,
                               ]
                          )
                     }
                     break;
                case SUPPORTED_PACKETS.SUBSCRIBE.type:
                     payload = DestructurePayload_Subscribe(EventData)
-                    let requestData = this.state
                     let topic = payload.topic.toString()
                     responseType = SUPPORTED_PACKETS.SUBACK.type
-                    cliendID = requestData.request.cliendID.toString()
-                    console.log("sub init",cliendID,payload)
+                    cliendID = socket.state.cliendID.toString()
                     await processSubscribe(
                          dbconnection.inMemory,
-                         responseType, 
+                         responseType,
                          cliendID,
                          payload,
                          topic,
                          connectionState,
                          socket)
+
+                    await processPending(
+                         dbconnection.inMemory,
+                         cliendID,
+                         topic,
+                         socket)
                     break;
                case SUPPORTED_PACKETS.PUBREL.type:
-                    requestData = this.state
                     payload = DestructurePayload_PublishRelease(EventData)
                     await processPubRel.apply(this,
                          [
@@ -147,13 +137,10 @@ export class BrokerEventHandler {
                     )
                     break;
                case SUPPORTED_PACKETS.PUBREC.type:
-                    console.log("rec",EventData)
                     payload = DestructurePayload_PubRec(EventData)
-                    console.log(payload.identifier)
-                    socket.write(Buffer.from([98,0x2,payload.identifier]))
+                    await processPubRec(dbconnection.inMemory, payload.identifier, socket)
                     break;
                case SUPPORTED_PACKETS.PUBACK.type:
-                    requestData = this.state
                     payload = DestructurePayload_PublishAck(EventData)
                     await processPubAck.apply(this,
                          [
@@ -163,8 +150,7 @@ export class BrokerEventHandler {
                     )
                     break;
                case SUPPORTED_PACKETS.PUBCOMP.type:
-                    requestData = this.state
-                    cliendID = requestData.request.cliendID.toString()
+                    cliendID = socket.state.cliendID.toString()
                     payload = DestructurePayload_PublishComp(EventData)
                     await processPubComp.apply(
                          this,
@@ -178,11 +164,9 @@ export class BrokerEventHandler {
                     )
                     break;
                case SUPPORTED_PACKETS.UNSUBSCRIBE.type:
-                    console.log("unsub")
-                    requestData = this.state
                     payload = DestructurePayload_UnSubscribe(EventData)
                     let identifier = payload.identifier
-                    cliendID = requestData.request.cliendID.toString()
+                    cliendID = socket.state.cliendID.toString()
                     topic = payload.topic.toString()
                     await processUnSubscribe.apply(
                          this,
@@ -194,15 +178,16 @@ export class BrokerEventHandler {
                               socket
                          ]
                     )
-                    let del = await selectTopic(dbconnection.inMemory,["topic","client_id"],"subscription",[topic])
-                    console.log("del",del)
                     break;
                case SUPPORTED_PACKETS.PINGREQ.type:
-                    generateResponePing(SUPPORTED_PACKETS.PINGRESP.type,keepAlive,socket)
+                    generateResponePing(SUPPORTED_PACKETS.PINGRESP.type, keepAlive, socket)
                     break;
                case SUPPORTED_PACKETS.DISCONNECT.type:
-                   //connectionState.delete(cliendID)
+                    connectionState.delete(cliendID)
                     socket.destroy()
+                    break;
+               // Unexpected disconnection
+               case 400:
                     break;
 
           }

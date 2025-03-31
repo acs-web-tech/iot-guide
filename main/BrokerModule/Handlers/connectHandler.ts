@@ -1,5 +1,6 @@
-import { insertData, select } from "../../DBSqlite/crudOperations"
+import { insertData, select, deleteDataByIdentifier } from "../../DBSqlite/crudOperations"
 import { generateRespone } from "../../Utils/ByteManupulator"
+import { processPending } from "./handlePending"
 export async function processConnect(dbconnection, responseType, requestData, reason, socket) {
     let statusInsert = await insertData([
         requestData.cliendID.toString(),
@@ -14,7 +15,8 @@ export async function processConnect(dbconnection, responseType, requestData, re
         dbconnection,
         "connection"
     )
-    let selectdata = await select(dbconnection, ["*"], "connection")
-    return generateRespone(responseType, reason, socket)
+    // connack
+    generateRespone(responseType, reason, socket)
+    //let selectdata = await select(dbconnection, ["*"], "connection")
 
 }

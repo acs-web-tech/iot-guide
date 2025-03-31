@@ -21,7 +21,8 @@ export let SUPPORTED_PACKETS = {
     UNSUBACK: { type: 176 , remainingLength:2 },
     PINGREQ: { type: 192 },
     PINGRESP: { type: 208 },
-    DISCONNECT: { type: 224 }
+    DISCONNECT: { type: 224 },
+    PUBRELRESP:{type:98}
 }
 export enum flags {
     CONNACK_FLAG_WITH_USERNAME_PASSWORD = 194,

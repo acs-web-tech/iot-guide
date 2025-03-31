@@ -18,13 +18,13 @@ export async function processPubRel(dbconnection, payload, connectionState, sock
         [
             "client_id",
             "topic",
-            "qos"
+            "qos",
+            "identifier"
         ],
         "subscription",
         [Message[0].topic.toString()]
     )
-    console.log("subs",subscribedClients)
-    deliverMessage(
+    await deliverMessage(
         subscribedClients,
         payload,
         Message[0].qos,
@@ -32,5 +32,6 @@ export async function processPubRel(dbconnection, payload, connectionState, sock
         dbconnection,
         connectionState
     )
+    // console.log("comp",Buffer.from([SUPPORTED_PACKETS.PUBCOMP.type,0x02,...payload.identifier]))
     generateResponePuback(SUPPORTED_PACKETS.PUBCOMP.type, payload.identifier, socket)
 }
