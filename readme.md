@@ -14,7 +14,6 @@ This library is designed for extensibility, security, and efficiency, catering t
 - **QoS (Quality of Service) Levels 0, 1, and 2**
 - **Authentication & Authorization Mechanisms** (Pluggable security layers)
 - **Bridging Support (Upcoming)**: SCADA-to-MQTT bridging for industrial applications
-- **Graphics & Visualization Library (Upcoming)**
 - **Extensible Plugin System** for custom integrations
 - **Optimized for Performance** with minimal memory footprint
 - **Zero Dependency on External MQTT Brokers**
@@ -38,7 +37,7 @@ We ensure full interoperability with MQTT-compliant clients and brokers.
 - **Rule Engine for Automated Message Processing**
 
 ## Current Development Status
-We are currently working on the initial implementation of MQTT 3.1.1 as per the IBM specification and expect a First Stage Beta Release on March 16,2025.
+We are currently working on the initial implementation of MQTT 3.1.1 as per the IBM specification 
 
 ## Contribution
 
@@ -48,16 +47,14 @@ We welcome contributions from the community! To get started:
 2. Commit your changes
 3. Open a pull request
 
-### Major Contributors
+### Major Contributor
 
-- **Arun.P** - Core architecture & development [LinkedIN](https://www.linkedin.com/in/arun-p-69a444244/])
+- **Arun.P** - Core architecture & development [Github](https://github.com/acs-web-tech/)
 
 ## Sponsorship
 
 Building an open-source, high-performance MQTT broker requires community support. If you find our initiative useful, consider sponsoring us.
 
-### How You Can Support
-- **Sponsor via GitHub Sponsors**
 
 ## License
 
