@@ -55,8 +55,6 @@ We welcome contributions from the community! To get started:
 
 Building an open-source, high-performance MQTT broker requires community support. If you find our initiative useful, consider sponsoring us.
 
-### How You Can Support
-- **Sponsor via GitHub Sponsors**
 
 ## License
 
