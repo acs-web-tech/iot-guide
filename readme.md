@@ -49,7 +49,7 @@ We welcome contributions from the community! To get started:
 
 ### Major Contributor
 
-- **Arun.P** - Core architecture & development [LinkedIN](https://www.linkedin.com/in/arun-p-69a444244/])
+- **Arun.P** - Core architecture & development [LinkedIN](https://www.linkedin.com/in/arun-p-69a444244)
 
 ## Sponsorship
 
