@@ -1,7 +1,8 @@
 import { deliverMessage } from "../../Utils/messageDeliveryQueue"
-import { update, selectByID, selectTopic } from "../../DBSqlite/crudOperations"
+import { update, selectByID, selectTopic, select } from "../../DBSqlite/crudOperations"
 import { generateResponePuback } from "../../Utils/ByteManupulator"
 import { SUPPORTED_PACKETS } from "../Interfaces/Enums"
+import { DestructurePayload_Publish } from "../../Utils/publishPacket"
 export async function processPubRel(dbconnection, payload, connectionState, socket) {
     let updateStatus = await update(dbconnection, [1, payload.identifier])
     let Message: any = await selectByID(dbconnection, [
@@ -13,6 +14,7 @@ export async function processPubRel(dbconnection, payload, connectionState, sock
         "publish",
         [payload.identifier]
     )
+    //console.log("message",await select(dbconnection,["*"],""))
     let subscribedClients: any = await selectTopic(
         dbconnection,
         [
@@ -24,6 +26,8 @@ export async function processPubRel(dbconnection, payload, connectionState, sock
         "subscription",
         [Message[0].topic.toString()]
     )
+    let payloadData = DestructurePayload_Publish(Message[0].payload)
+    if(payloadData.retain!=1){
     await deliverMessage(
         subscribedClients,
         payload,
@@ -32,6 +36,7 @@ export async function processPubRel(dbconnection, payload, connectionState, sock
         dbconnection,
         connectionState
     )
+}
     // console.log("comp",Buffer.from([SUPPORTED_PACKETS.PUBCOMP.type,0x02,...payload.identifier]))
     generateResponePuback(SUPPORTED_PACKETS.PUBCOMP.type, payload.identifier, socket)
 }

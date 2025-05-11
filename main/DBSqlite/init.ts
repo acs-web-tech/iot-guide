@@ -15,6 +15,7 @@ export async function createTableDependency(dbconnection) {
         retain int,
         haswill int ,
         willmessage varchar,
+        willtopic varchar,
         clean int,
         keepalive int,
         start_time timestamp default current_timestamp

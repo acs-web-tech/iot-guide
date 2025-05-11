@@ -17,7 +17,8 @@ export interface PacketStructure {
     willMessageTopicLen: number,
     willMessageTopic: Buffer | null,
     willMessageLen: number,
-    willMessage: Buffer | null
+    willMessage: Buffer | null,
+    qos:number | null
 
 }
 export interface PacketStructure_Publish {

@@ -22,8 +22,10 @@ export function DestructurePayload_Publish(buffer: Buffer) {
     packets.topicLen = buffer[cursor] + buffer[++cursor]
     packets.topic = buffer.subarray(++cursor, cursor = packets.topicLen + cursor++)
     // check MSB for Message Identifier is within the limit
+   if(packets.qos>0){
     packets.identifier = buffer.subarray(cursor++, ++cursor)
-   // packets.identifier = parseInt(packets.identifier.toString("hex"),16)
+   }  
+    // packets.identifier = parseInt(packets.identifier.toString("hex"),16)
     packets.payload = buffer.subarray(cursor)
     return packets
 

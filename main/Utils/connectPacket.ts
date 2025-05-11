@@ -7,6 +7,7 @@ export function connect_Payload(buffer: Buffer) {
         protocolName: Buffer.from([]),
         protocolLevel: 0,
         flags: 0,
+        qos:0,
         aliveTime: 0,
         clientLength: 0,
         cliendID: Buffer.from([]),
@@ -27,9 +28,11 @@ export function connect_Payload(buffer: Buffer) {
     packets.protocolName = buffer.subarray(cursor, cursor = cursor + packets.protocolLength)
     packets.protocolLevel = buffer[++cursor]
     packets.flags = buffer[++cursor]
-    packets.aliveTime = buffer[++cursor] + buffer[++cursor]
+    packets.qos = packets.flags >> 4
+    packets.aliveTime = ((buffer[++cursor]<<8) + buffer[++cursor])*1000
     packets.clientLength = buffer[++cursor] + buffer[++cursor]
     packets.cliendID = buffer.subarray(++cursor, cursor = cursor + packets.clientLength)
+    //if  will message found
     if (((packets.flags >> 2) & 1) == 1) {
         packets.willMessageTopicLen = buffer[cursor] + buffer[++cursor]
         if (packets.willMessageTopicLen == 0) {

@@ -13,7 +13,7 @@ export async function processUnSubscribe(dbconnection, clientID, identifier, top
         "subscription"
     )
     this.subscriberDeliveryQueue.forEach((subscriber, index) => {
-        if (subscriber.topic == topic) {
+        if (subscriber.topic == topic && clientID == subscriber.cliendID) {
             this.subscriberDeliveryQueue.splice(index, 1)
         }
     });
