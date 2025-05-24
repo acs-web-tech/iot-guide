@@ -2,6 +2,7 @@ import { Client } from "mqtt/*"
 import { insertData, select, selectByClientId, selectTopic } from "../../DBSqlite/crudOperations"
 import { generateResponeSuback } from "../../Utils/ByteManupulator"
 import { processPending } from "./handlePending"
+let i =0
 export async function processSubscribe(dbconnection, responseType, clientID, payload, topic, connectionState, socket) {
     let hasSubscription: any = await selectByClientId(dbconnection, ["topic", "client_id"], "subscription", [clientID, topic])
     if (hasSubscription.length == 0) {
@@ -15,11 +16,13 @@ export async function processSubscribe(dbconnection, responseType, clientID, pay
             dbconnection,
             "subscription"
         )
+        //console.log("subs",await select(dbconnection,["*"],"subscription"))
     }
     let selectdata = await select(dbconnection, ["*"], "subscription")
     generateResponeSuback(responseType, payload.identifier, socket)
     let retain_messages: any = await selectTopic(dbconnection, ["*"], "retain_messages", [topic])
     if (retain_messages.length > 0) {
+        console.log("worked ",i++)
         socket.write(retain_messages[0].payload)
     }
     return true

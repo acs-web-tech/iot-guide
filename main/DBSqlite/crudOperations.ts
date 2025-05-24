@@ -1,4 +1,4 @@
-import * as sqlite from "sqlite3"
+import * as sqlite from "better-sqlite3"
 export function createTable(connection, tablename) {
     let checkTableExisits = connection.inMemory.exec("show tables")
 }

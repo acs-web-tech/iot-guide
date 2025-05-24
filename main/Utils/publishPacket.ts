@@ -40,7 +40,7 @@ export function DestructurePayload_PublishRelease(buffer: Buffer) {
     packets.type = buffer[cursor]
     let willFitOneByte = bytesConsumed(buffer.byteLength)
     packets.remainingLength = buffer.subarray(++cursor,cursor = willFitOneByte + cursor).length
-    packets.identifier = buffer.subarray(cursor++)
+    packets.identifier = buffer.subarray(cursor++,cursor+1)
     return packets
 }
 export function DestructurePayload_PublishComp(buffer: Buffer) {

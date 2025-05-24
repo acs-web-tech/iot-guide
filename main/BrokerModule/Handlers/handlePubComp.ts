@@ -5,6 +5,7 @@ import { generateResponePuback } from "../../Utils/ByteManupulator"
 export async function processPubComp(dbconnection, cliendID, payload, connectionState, socket) {
     let publishMessage: any = await selectByIdentifier(dbconnection, ["topic", "identifier"], "publish", [payload.identifier])
     let avaliableSubscribers = this.subscriberDeliveryQueue.filter((subscriber) => subscriber.topic == publishMessage.topic)
+    
     if (avaliableSubscribers.length > 0) {
         this.subscriberDeliveryQueue.forEach((subscriber, index) => {
             if (subscriber.cliendID == cliendID && subscriber.topic == publishMessage.topic) {

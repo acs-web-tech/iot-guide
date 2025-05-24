@@ -70,6 +70,7 @@ export class BrokerEventHandler {
           switch ((EventData[0] & ~((1 << 4) - 1))) {
                // 10 Represents connection packet
                case SUPPORTED_PACKETS.CONNECT.type:
+                    //console.log("cenn",EventData)
                     payload = DestructurePayload(EventData)
                     let action = await this.validateRequest(EventData, dbconnection)
                     let reason = this.state.reasonCode
@@ -78,7 +79,7 @@ export class BrokerEventHandler {
                     let keepAlive = socket.aliveTime
                     let cliendID = payload.cliendID.toString()
                     socket.state = payload
-                    console.log("conn",socket.state)
+                    //console.log("conn",socket.state)
                     socket.clean = ((payload.flags >> 1) & 1)
                     // Error generation function required to replace these code
                     connectionState.set(cliendID, socket)
@@ -144,6 +145,7 @@ export class BrokerEventHandler {
                          socket)
                     break;
                case SUPPORTED_PACKETS.PUBREL.type:
+                    //console.log("pubrel",EventData)
                     payload = DestructurePayload_PublishRelease(EventData)
                     await processPubRel.apply(this,
                          [
@@ -155,6 +157,7 @@ export class BrokerEventHandler {
                     )
                     break;
                case SUPPORTED_PACKETS.PUBREC.type:
+                    console.log("rec",EventData)
                     payload = DestructurePayload_PubRec(EventData)
                     await processPubRec(dbconnection.inMemory, payload.identifier, socket)
                     break;
@@ -212,7 +215,6 @@ export class BrokerEventHandler {
                     //Unexpected disconnection
                     if(socket.state){
                     if (EventData == 400) {
-                         console.log("dis",socket.state)
                          let cliendID = socket.state.cliendID.toString()
                          let block: any = await processWill(dbconnection.inMemory, cliendID, socket)
                          let payload = DestructurePayload_Publish(block.buffer)
@@ -234,8 +236,7 @@ export class BrokerEventHandler {
                               block.buffer,
                               dbconnection.inMemory,
                               connectionState
-                         )
-                         await 
+                         ) 
                          await processDisconnect.apply(this, [dbconnection, cliendID, connectionState,socket.clean])
 
                          connectionState.delete(cliendID)

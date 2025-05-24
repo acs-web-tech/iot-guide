@@ -4,6 +4,7 @@ import { generateResponePuback } from "../../Utils/ByteManupulator"
 import { SUPPORTED_PACKETS } from "../Interfaces/Enums"
 import { DestructurePayload_Publish } from "../../Utils/publishPacket"
 export async function processPubRel(dbconnection, payload, connectionState, socket) {
+    console.log("rel")
     let updateStatus = await update(dbconnection, [1, payload.identifier])
     let Message: any = await selectByID(dbconnection, [
         "client_id",
@@ -14,7 +15,6 @@ export async function processPubRel(dbconnection, payload, connectionState, sock
         "publish",
         [payload.identifier]
     )
-    //console.log("message",await select(dbconnection,["*"],""))
     let subscribedClients: any = await selectTopic(
         dbconnection,
         [
