@@ -1,12 +1,11 @@
 import { DestructurePayload } from "./ByteManupulator"
-import { SUPPORTED_PACKETS } from "../BrokerModule/Interfaces/Enums"
-import { PacketStructure } from "./Interface/packets"
 import { ReasonCode } from "../BrokerModule/Interfaces/EventConfig"
-import { DestructurePayload_Publish } from "./publishPacket"
+import { destructurePayloadPublish } from "./publishPacket"
+import { PacketStructure_Publish } from "./Interface/packets"
 export function validatePayload(target, methodName, propdes: PropertyDescriptor) {
-    let decoratingMethod = propdes.value
+    const decoratingMethod = propdes.value
     propdes.value = function () {
-        let plainPayload = DestructurePayload(this.eventData)
+        const plainPayload = DestructurePayload(this.eventData)
         if ((((plainPayload.flags) >> 6) & 1) == 0 && ((((plainPayload.flags) >> 7) & 1) == 0)) {
             this.state.reject = true
             this.state.reasonCode = ReasonCode.NO_USERNAME_PASSWORD_FOUND
@@ -37,7 +36,7 @@ export function validatePayload(target, methodName, propdes: PropertyDescriptor)
 export function validatePublish(target, methodName, propdes) {
     let decoratingMethod = propdes.value
     propdes.value = function () {
-        let plainPayload = DestructurePayload_Publish(this.eventData)
+        let plainPayload:PacketStructure_Publish = destructurePayloadPublish(this.eventData)
         if (plainPayload.payload.length == 0) {
             this.state.reasonCode = ReasonCode.MSG_NO_PAYLOAD
             this.state.reject = true

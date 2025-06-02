@@ -1,29 +1,27 @@
-import { Client } from "mqtt/*"
-import { insertData, select, selectByClientId, selectTopic } from "../../DBSqlite/crudOperations"
 import { generateResponeSuback } from "../../Utils/ByteManupulator"
-import { processPending } from "./handlePending"
-let i =0
-export async function processSubscribe(dbconnection, responseType, clientID, payload, topic, connectionState, socket) {
-    let hasSubscription: any = await selectByClientId(dbconnection, ["topic", "client_id"], "subscription", [clientID, topic])
-    if (hasSubscription.length == 0) {
-        let insertStatus = await insertData(
-            [
-                clientID,
-                payload.identifier,
+export async function processSubscribe(responseType, clientID, payload, topic, connectionState, socket) {
+    if (this.subscription[topic]) {
+        this.subscription[topic][clientID] = {
+            identifier: payload.identifier,
+            topic,
+            qos: payload.qos,
+            clientID
+        }
+    } else {
+        this.subscription[topic] = {
+            [clientID]: {
+                identifier: payload.identifier,
                 topic,
-                payload.qos
-            ],
-            dbconnection,
-            "subscription"
-        )
-        //console.log("subs",await select(dbconnection,["*"],"subscription"))
+                qos: payload.qos,
+                clientID
+            }
+        }
     }
-    let selectdata = await select(dbconnection, ["*"], "subscription")
+    this.connection[clientID].subscriptions.push(topic)
     generateResponeSuback(responseType, payload.identifier, socket)
-    let retain_messages: any = await selectTopic(dbconnection, ["*"], "retain_messages", [topic])
-    if (retain_messages.length > 0) {
-        console.log("worked ",i++)
-        socket.write(retain_messages[0].payload)
+    let retain_messages: any = this.retainQueue.get(topic.toString())
+    if (retain_messages) {
+        socket.write(retain_messages)
     }
     return true
 } 

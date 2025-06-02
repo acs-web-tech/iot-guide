@@ -1,84 +1,92 @@
 import { PacketStructure_Publish,PacketStructure_PublishRelease , PacketStructure_PublishReleaseAck ,PacketStructure_Comp} from "./Interface/packets";
 import { bytesConsumed } from "./connectPacket";
-export function DestructurePayload_Publish(buffer: Buffer) {
-    let packets: PacketStructure_Publish = {
-        type: 0,
-        remainingLength: 0,
-        dup: 0,
-        retain: 0,
-        topicLen: 0,
-        topic: Buffer.from([]),
-        qos: 0,
-        payload: Buffer.from([]) || null,
-        identifier: Buffer.from([]) || null
-    }
+export function destructurePayloadPublish(buffer: Buffer):PacketStructure_Publish {
     let cursor = 0
-    packets.type = 3
-    packets.dup = ((buffer[cursor] >> 3) & 1)
-    packets.qos = ((buffer[cursor] >> 1) & 0b11)
-    packets.retain = (buffer[cursor] & 1)
-    let willFitOneByte = bytesConsumed(buffer.byteLength)
-    packets.remainingLength = buffer.subarray(++cursor, cursor = cursor + willFitOneByte).length
-    packets.topicLen = buffer[cursor] + buffer[++cursor]
-    packets.topic = buffer.subarray(++cursor, cursor = packets.topicLen + cursor++)
-    // check MSB for Message Identifier is within the limit
-   if(packets.qos>0){
-    packets.identifier = buffer.subarray(cursor++, ++cursor)
-   }  
+    const willFitOneByte = bytesConsumed(buffer.byteLength)
+    let topicLen = 0
+    let qos = 0 
+    const packets: PacketStructure_Publish = {
+        type: buffer[cursor],
+        dup: ((buffer[cursor] >> 3) & 1),
+        qos: qos = ((buffer[cursor] >> 1) & 0b11),
+        retain: (buffer[cursor] & 1),
+        remainingLength: buffer.subarray(++cursor, cursor = cursor + willFitOneByte).length,
+        topicLen: topicLen = buffer[cursor] + buffer[++cursor],
+        topic: buffer.subarray(++cursor, cursor = topicLen + cursor++),
+        identifier:qos>0? buffer.subarray(cursor++, ++cursor):Buffer.from([]),
+        payload: buffer.subarray(cursor)
+    }
+   
+//     packets.type = 3
+//     packets.dup = ((buffer[cursor] >> 3) & 1)
+//     packets.qos = ((buffer[cursor] >> 1) & 0b11)
+//     packets.retain = (buffer[cursor] & 1)
+
+//     packets.remainingLength = buffer.subarray(++cursor, cursor = cursor + willFitOneByte).length
+//     packets.topicLen = buffer[cursor] + buffer[++cursor]
+//     packets.topic = buffer.subarray(++cursor, cursor = packets.topicLen + cursor++)
+//     // check MSB for Message Identifier is within the limit
+//    if(packets.qos>0){
+//     packets.identifier = buffer.subarray(cursor++, ++cursor)
+//    }  
     // packets.identifier = parseInt(packets.identifier.toString("hex"),16)
-    packets.payload = buffer.subarray(cursor)
+    //packets.payload = buffer.subarray(cursor)
     return packets
 
 }
-export function DestructurePayload_PublishRelease(buffer: Buffer) {
-    let packets: PacketStructure_PublishRelease = {
-        type: 0,
-        remainingLength: 0,
-        identifier: Buffer.from([]) || null
-    }
+export function destructurePayloadPublishRelease(buffer: Buffer):PacketStructure_PublishRelease {
     let cursor = 0
-    packets.type = buffer[cursor]
-    let willFitOneByte = bytesConsumed(buffer.byteLength)
-    packets.remainingLength = buffer.subarray(++cursor,cursor = willFitOneByte + cursor).length
-    packets.identifier = buffer.subarray(cursor++,cursor+1)
+    const willFitOneByte = bytesConsumed(buffer.byteLength)
+    const packets: PacketStructure_PublishRelease = {
+        type: buffer[cursor],
+        remainingLength: buffer.subarray(++cursor,cursor = willFitOneByte + cursor).length,
+        identifier: buffer.subarray(cursor++,cursor+1)
+    }
+    // packets.type = buffer[cursor]
+   
+    // packets.remainingLength = buffer.subarray(++cursor,cursor = willFitOneByte + cursor).length
+    // packets.identifier = buffer.subarray(cursor++,cursor+1)
     return packets
 }
-export function DestructurePayload_PublishComp(buffer: Buffer) {
-    let packets: PacketStructure_Comp = {
-        type: 0,
-        remainingLength:0,
-        identifier: Buffer.from([]) || null
-    }
+export function destructurePayloadPublishComp(buffer: Buffer):PacketStructure_Comp {
     let cursor = 0
-    packets.type = buffer[cursor]
-    let willFitOneByte = bytesConsumed(buffer.byteLength)
-    packets.remainingLength = buffer.subarray(++cursor,cursor = cursor+willFitOneByte).byteLength
-    packets.identifier = buffer.subarray(cursor)
+    const willFitOneByte = bytesConsumed(buffer.byteLength)
+    const packets: PacketStructure_Comp = {
+        type: buffer[cursor],
+        remainingLength: buffer.subarray(++cursor,cursor = cursor+willFitOneByte).byteLength,
+        identifier: buffer.subarray(cursor)
+
+    }
+    // packets.type = buffer[cursor]
+    // packets.remainingLength = buffer.subarray(++cursor,cursor = cursor+willFitOneByte).byteLength
+    // packets.identifier = buffer.subarray(cursor)
     return packets
 }
-export function DestructurePayload_PublishAck(buffer: Buffer) {
-    let packets: PacketStructure_PublishReleaseAck = {
-        type: 0,
-        remainingLength:0,
-        identifier: Buffer.from([]) || null
-    }
+export function destructurePayloadPublishAck(buffer: Buffer):PacketStructure_PublishReleaseAck {
+    const willFitOneByte = bytesConsumed(buffer.byteLength)
     let cursor = 0
-    packets.type = buffer[cursor]
-    let willFitOneByte = bytesConsumed(buffer.byteLength)
-    packets.remainingLength = buffer.subarray(++cursor,cursor = cursor+willFitOneByte).byteLength
-    packets.identifier = buffer.subarray(cursor)
+    const packets: PacketStructure_PublishReleaseAck = {
+       type: buffer[cursor],
+       remainingLength: buffer.subarray(++cursor,cursor = cursor+willFitOneByte).byteLength,
+       identifier: buffer.subarray(cursor)
+    }
+    
+    // packets.type = buffer[cursor]
+    // packets.remainingLength = buffer.subarray(++cursor,cursor = cursor+willFitOneByte).byteLength
+    // packets.identifier = buffer.subarray(cursor)
     return packets
 }
-export function DestructurePayload_PubRec(buffer: Buffer) {
-    let packets: PacketStructure_PublishReleaseAck = {
-        type: 0,
-        remainingLength:0,
-        identifier: Buffer.from([]) || null
-    }
+export function destructurePayloadPubRec(buffer: Buffer) {
     let cursor = 0
-    packets.type = buffer[cursor]
-    let willFitOneByte = bytesConsumed(buffer.byteLength)
-    packets.remainingLength = buffer.subarray(++cursor,cursor = cursor+willFitOneByte).byteLength
-    packets.identifier = buffer.subarray(cursor)
+    const willFitOneByte = bytesConsumed(buffer.byteLength)
+    const packets: PacketStructure_PublishReleaseAck = {
+        type: buffer[cursor],
+        remainingLength: buffer.subarray(++cursor,cursor = cursor+willFitOneByte).byteLength,
+        identifier: buffer.subarray(cursor)
+    }
+    
+    // packets.type = buffer[cursor]
+    // packets.remainingLength = buffer.subarray(++cursor,cursor = cursor+willFitOneByte).byteLength
+    // packets.identifier = buffer.subarray(cursor)
     return packets
 }

@@ -1,9 +1,20 @@
 {
   "compilerOptions": {
     "baseUrl": "./",
-    "types": [
-      "node"
-    ],
-    "experimentalDecorators": true
-  }
+    "types": ["node"],
+    "allowJs": true,
+    "experimentalDecorators":true ,
+    "esModuleInterop": true,
+    "strictNullChecks": true,
+    "noImplicitThis": false
+  },
+  "include": [
+    "eslint.config.mjs",
+    "**/*.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "*.pem"
+  ]
+
 }

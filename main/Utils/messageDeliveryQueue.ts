@@ -1,30 +1,24 @@
-import { deleteDataByIdentifier,insertData,select,selectByClientId,selectByClientIdOnly } from "../DBSqlite/crudOperations"
-import { DestructurePayload_Publish } from "./publishPacket"
-export async function deliverMessage(deliveryQueue: Array<any>, payload,qos=null,message, dbconnection, socketQueue: Map<any, any>) {
-   
-   return deliveryQueue.map(async (value, index) => {
-        let socket = socketQueue.get(value.client_id.toString())
-     let identifier = DestructurePayload_Publish(message).identifier
-       if(((!socket||socket.destroy) && (qos == 2|| qos == 1))){    
-            let addPendingList = await insertData([
-                value.client_id,
-                identifier,
-                value.topic,
-                message
-            ],
+import { destructurePayloadPublish } from "./publishPacket"
+import { extractID } from "./getResponseType"
+import { Socket } from "net"
+import { PacketStructure_Publish } from "./Interface/packets"
+export function deliverMessage(deliveryQueue, qos = null, message, topic: string) {
+    for (let subscriber of deliveryQueue) {
+        const socket: Socket = this.socketQueue.get(subscriber)
+        const id = extractID(destructurePayloadPublish(message).identifier)
+        if ((socket && socket.destroyed) && (qos === 2 || qos === 1)) {
 
-            dbconnection,
-            "qos_2_pending_list"
-        )
-        let pendingMessage: any = await select(dbconnection, ["payload", "topic", "client_id", "identifier"], "qos_2_pending_list")
-        //console.log("pen",pendingMessage)
-        }
-        socket?.write(message)
-        if (deliveryQueue.length - 1 == index) {
-            if (payload.qos == 0) {
-                let deleteStatus = deleteDataByIdentifier(dbconnection, [message.identifier],"publish")
+            if (!this.pendingQueue[subscriber]) {
+                this.pendingQueue = {
+                    [subscriber]:{[topic]:{}}
+                }
             }
+
+            this.pendingQueue[subscriber][topic][id] = message
         }
-        return true;
-    })
+        //  console.log("del", this.pendingQueue)
+        socket?.write(message)
+    }
+    return true;
+
 }

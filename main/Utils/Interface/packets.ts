@@ -29,8 +29,8 @@ export interface PacketStructure_Publish {
     retain: number,
     topicLen: number,
     topic: Buffer | null,
-    identifier: Buffer | null | number
-    payload: Buffer | null
+    identifier: Buffer
+    payload: Buffer
 }
 export interface PacketStructure_PublishRelease {
     type: number,

@@ -1,21 +1,14 @@
-import { deleteData, select } from "../../DBSqlite/crudOperations"
+import { extractID } from "../../Utils/getResponseType"
 import { generateResponeUnSuback } from "../../Utils/ByteManupulator"
-import { selectTopic } from "../../DBSqlite/crudOperations"
 import { SUPPORTED_PACKETS } from "../Interfaces/Enums"
-export async function processUnSubscribe(dbconnection, clientID, identifier, topic, socket) {
-    let deleteStatus = await deleteData(
-        dbconnection,
-        [
-            topic,
-            clientID
-            
-        ],
-        "subscription"
-    )
-    this.subscriberDeliveryQueue.forEach((subscriber, index) => {
-        if (subscriber.topic == topic && clientID == subscriber.cliendID) {
-            this.subscriberDeliveryQueue.splice(index, 1)
-        }
-    });
+export async function processUnSubscribe(clientID:string, identifier:Buffer, topic:string, socket) {
+    let id = extractID(identifier)
+    delete this.subscription[topic][clientID]
+    console.log("uns",this.subscription)
+    // this.subscriberDeliveryQueue.forEach((subscriber, index) => {
+    //     if (subscriber.topic == topic && clientID == subscriber.cliendID) {
+    //         this.subscriberDeliveryQueue.splice(index, 1)
+    //     }
+    // });
     generateResponeUnSuback(SUPPORTED_PACKETS.UNSUBACK.type, identifier, socket)
 } 

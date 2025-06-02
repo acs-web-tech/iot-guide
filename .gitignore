@@ -2,3 +2,6 @@ node_modules/*
 main/*.js
 main/*/*.js
 main/*/*/*.js
+main/certs/*
+main/DBSqlite/*
+Datastore/*

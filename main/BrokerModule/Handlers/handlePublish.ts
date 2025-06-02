@@ -1,109 +1,54 @@
 import { SUPPORTED_PACKETS } from "../Interfaces/Enums"
-import { selectTopic, insertData, updateRetainMessage, updatePublish , deleteRetainMessage} from "../../DBSqlite/crudOperations"
 import { deliverMessage } from "../../Utils/messageDeliveryQueue"
 import { generateResponePuback } from "../../Utils/ByteManupulator"
-export async function processPublish(dbconnection, responseType, receivedMessage, topic, cliendID, payload, connectionState,receivedPayloadMessage, socket) {
+import { extractID } from "../../Utils/getResponseType"
+export async function processPublish(receivedMessage, topic, cliendID, payload,receivedPayloadMessage, socket) {
+    let responseType = 0
     if (payload.qos == 1) {
         responseType = SUPPORTED_PACKETS.PUBACK.type
     }
     if (payload.qos == 2) {
         responseType = SUPPORTED_PACKETS.PUBREC.type
     }
+    let id = extractID(payload.identifier)
     if (payload.retain!=1) {
-        let subscribedClients: any = await selectTopic(
-            dbconnection,
-            [
-                "client_id",
-                "topic",
-                "qos"
-            ],
-            "subscription",
-            [topic]
-        )
-        if (payload.qos == 0) {
-            deliverMessage(
-                subscribedClients,
-                payload,
+        console.log(this.subscription)
+        let subs = Object.keys(this.subscription[topic]||{})
+        if(payload.qos == 0 ){
+             deliverMessage.apply(this,[
+                subs,
                 payload.qos,
                 receivedMessage,
-                dbconnection,
-                connectionState
+                topic
+             ]
             )
         }
         if (payload.qos == 1) {
-            deliverMessage(
-                subscribedClients,
-                payload,
+            this.publisherQueue [id] = {...payload,receivedMessage}
+            deliverMessage.apply(this,
+                [
+                subs,
                 payload.qos,
                 receivedMessage,
-                dbconnection,
-                connectionState
+                topic
+                ]
             )
             generateResponePuback(responseType, payload.identifier, socket)
 
         }
         if (payload.qos == 2) {
-            let insertStatus = await insertData(
-                [
-                    cliendID,
-                    payload.identifier,
-                    payload.topic,
-                    receivedMessage,
-                    payload.retain,
-                    payload.qos,
-                    payload.qos == 1 ? 1 : 0,
-                    payload.qos == 1 || payload.qos == 0 ? 1 : 0
-                ],
-                dbconnection,
-                "publish"
-            )
-            subscribedClients.map((value) => {
-                this.subscriberDeliveryQueue.push({ cliendID, topic: payload.topic, qos: payload.qos, identifier: payload.identifier })
-            })
-            //socket.write(Buffer.from([SUPPORTED_PACKETS.PUBREC.type,0x02,...payload.identifier]))
+            this.publisherQueue [id] = {...payload,receivedMessage}
             generateResponePuback(SUPPORTED_PACKETS.PUBREC.type, payload.identifier, socket)
         }
     }
+   
     if (payload.retain == 1 && receivedPayloadMessage.length!=0) {
-        let retain_messages: any = await selectTopic(dbconnection, ["*"], "retain_messages", [topic])
-        if (retain_messages.length == 0) {
-            let insertRetain = await insertData([cliendID, payload.identifier, topic, receivedMessage], dbconnection, "retain_messages")
-            // let insertStatus = await insertData(
-            //     [
-            //         cliendID,
-            //         payload.identifier,
-            //         payload.topic,
-            //         receivedMessage,
-            //         payload.retain,
-            //         payload.qos,
-            //         payload.qos == 1 ? 1 : 0,
-            //         payload.qos == 1 || payload.qos == 0 ? 1 : 0
-            //     ],
-            //     dbconnection,
-            //     "publish"
-            // )
-        } else {
-            // update retain message
-            let updateRetain = await updateRetainMessage(dbconnection, [cliendID, payload.identifier, topic, receivedMessage],"retain_messages")
-            // let insertUpdateStatus = await updatePublish(
-            //     dbconnection,
-            //     [
-            //         cliendID,
-            //         payload.identifier,
-            //         payload.topic,
-            //         receivedMessage,
-            //         payload.retain,
-            //         payload.qos,
-            //         payload.qos == 1 ? 1 : 0,
-            //         payload.qos == 1 || payload.qos == 0 ? 1 : 0
-            //     ],
-            //     "publish"
-            // )
-        }
-      generateResponePuback(responseType, payload.identifier, socket)
+        let retain_messages: any = this.retainQueue.has(topic)
+       
+            this.retainQueue.set(topic,receivedMessage)
+      //generateResponePuback(responseType, payload.identifier, socket)
     }
     if(payload.retain==1&&receivedPayloadMessage.length==0){
-        console.log("delete will",receivedPayloadMessage)
-        await deleteRetainMessage(dbconnection,[topic],"retain_messages")
+        this.retainQueue.delete(topic)
     }
 }

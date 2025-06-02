@@ -1,22 +1,6 @@
-import { allowedNodeEnvironmentFlags, pid } from "node:process"
-import { PacketStructure, VaraiblesHex, GLOBALS, PacketStructure_Publish } from "./Interface/packets"
-import { ReasonCode } from "../BrokerModule/Interfaces/EventConfig"
 import { SUPPORTED_PACKETS } from "../BrokerModule/Interfaces/Enums"
 import { connect_Payload } from "./connectPacket"
-import { DestructurePayload_Publish } from "./publishPacket"
-// will be depricated Soon not Recommended to use
-export function ExtractUnamePassword(eventDataHex): Array<string> {
-    let buffer = Buffer.from(eventDataHex, "hex")
-    let bufferLength = buffer.byteLength
-    let credentials = buffer.subarray(29, bufferLength).toString()
-    let split_credentials = credentials.match(/[a-z0-9A-Z]+/igm)
-    buffer.forEach((value) => {
-        console.log(value);
-    })
-    return split_credentials
-
-}
-// deprication warning end
+import { destructurePayloadPublish } from "./publishPacket"
 
 //Use this instead
 export function DestructurePayload(eventDataHex: Buffer) {
@@ -27,18 +11,18 @@ export function DestructurePayload(eventDataHex: Buffer) {
         packets = connect_Payload(buffer)
     }
     if (((eventDataHex[0] >> 0x3) & 1) == 1) {
-        packets = DestructurePayload_Publish(buffer)
+        packets = destructurePayloadPublish(buffer)
     }
     return packets
 }
 export let bufferHexToDecimal = (buffer: Buffer): number => {
-    let hexString = buffer.toString("hex")
+    const hexString = buffer.toString("hex")
     return parseInt(hexString, 16)
 }
 
-export let generateRespone = function (type: number, errorType: null | number, socket) {
-    let remainingLength = SUPPORTED_PACKETS.CONNACK.remainingLength
-    let AckBuffer = Buffer.from([type, remainingLength, 0, errorType])
+export let generateRespone = function (type: number, errorType: number, socket) {
+    const remainingLength = SUPPORTED_PACKETS.CONNACK.remainingLength
+    const AckBuffer = Buffer.from([type, remainingLength, 0, errorType])
     if (errorType > 0) {
         socket.write(AckBuffer)
         socket.destroy()
@@ -47,26 +31,26 @@ export let generateRespone = function (type: number, errorType: null | number, s
     socket.write(AckBuffer)
 }
 export let generateResponePuback = function (type: number,identity, socket) {
-    let remainingLength = SUPPORTED_PACKETS.PUBACK.remainingLength
-    let AckBuffer = Buffer.from([type, 0x02,...identity])
+    const remainingLength = SUPPORTED_PACKETS.PUBACK.remainingLength
+    const AckBuffer = Buffer.from([type, 0x02,...identity])
     console.log(AckBuffer)   
     socket.write(AckBuffer)
     
 }
 export let generateResponePing = function (type: number,identity, socket) {
-    let AckBuffer = Buffer.from([type, identity])
+    const AckBuffer = Buffer.from([type, identity])
       socket.write(AckBuffer)
     
 }
 export let generateResponeSuback = function (type: number,identity, socket) {
-    let remainingLength = SUPPORTED_PACKETS.SUBACK.remainingLength
-    let AckBuffer = Buffer.from([type, remainingLength,...identity,1])
+    const remainingLength = SUPPORTED_PACKETS.SUBACK.remainingLength
+    const AckBuffer = Buffer.from([type, remainingLength,...identity,1])
     socket.write(AckBuffer)
     
 }
 export let generateResponeUnSuback = function (type: number,identity, socket) {
-    let remainingLength = SUPPORTED_PACKETS.UNSUBACK.remainingLength
-    let AckBuffer = Buffer.from([type, remainingLength,...identity])
+    const remainingLength = SUPPORTED_PACKETS.UNSUBACK.remainingLength
+    const AckBuffer = Buffer.from([type, remainingLength,...identity])
     socket.write(AckBuffer)
     
 }
