@@ -54,5 +54,3 @@ export let generateResponeUnSuback = function (type: number,identity, socket) {
     socket.write(AckBuffer)
     
 }
-
-let bufferToString = (buffer: Buffer): string => buffer.toString()

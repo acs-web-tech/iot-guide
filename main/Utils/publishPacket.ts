@@ -16,21 +16,6 @@ export function destructurePayloadPublish(buffer: Buffer):PacketStructure_Publis
         identifier:qos>0? buffer.subarray(cursor++, ++cursor):Buffer.from([]),
         payload: buffer.subarray(cursor)
     }
-   
-//     packets.type = 3
-//     packets.dup = ((buffer[cursor] >> 3) & 1)
-//     packets.qos = ((buffer[cursor] >> 1) & 0b11)
-//     packets.retain = (buffer[cursor] & 1)
-
-//     packets.remainingLength = buffer.subarray(++cursor, cursor = cursor + willFitOneByte).length
-//     packets.topicLen = buffer[cursor] + buffer[++cursor]
-//     packets.topic = buffer.subarray(++cursor, cursor = packets.topicLen + cursor++)
-//     // check MSB for Message Identifier is within the limit
-//    if(packets.qos>0){
-//     packets.identifier = buffer.subarray(cursor++, ++cursor)
-//    }  
-    // packets.identifier = parseInt(packets.identifier.toString("hex"),16)
-    //packets.payload = buffer.subarray(cursor)
     return packets
 
 }
@@ -42,10 +27,6 @@ export function destructurePayloadPublishRelease(buffer: Buffer):PacketStructure
         remainingLength: buffer.subarray(++cursor,cursor = willFitOneByte + cursor).length,
         identifier: buffer.subarray(cursor++,cursor+1)
     }
-    // packets.type = buffer[cursor]
-   
-    // packets.remainingLength = buffer.subarray(++cursor,cursor = willFitOneByte + cursor).length
-    // packets.identifier = buffer.subarray(cursor++,cursor+1)
     return packets
 }
 export function destructurePayloadPublishComp(buffer: Buffer):PacketStructure_Comp {
@@ -57,9 +38,6 @@ export function destructurePayloadPublishComp(buffer: Buffer):PacketStructure_Co
         identifier: buffer.subarray(cursor)
 
     }
-    // packets.type = buffer[cursor]
-    // packets.remainingLength = buffer.subarray(++cursor,cursor = cursor+willFitOneByte).byteLength
-    // packets.identifier = buffer.subarray(cursor)
     return packets
 }
 export function destructurePayloadPublishAck(buffer: Buffer):PacketStructure_PublishReleaseAck {
@@ -70,10 +48,6 @@ export function destructurePayloadPublishAck(buffer: Buffer):PacketStructure_Pub
        remainingLength: buffer.subarray(++cursor,cursor = cursor+willFitOneByte).byteLength,
        identifier: buffer.subarray(cursor)
     }
-    
-    // packets.type = buffer[cursor]
-    // packets.remainingLength = buffer.subarray(++cursor,cursor = cursor+willFitOneByte).byteLength
-    // packets.identifier = buffer.subarray(cursor)
     return packets
 }
 export function destructurePayloadPubRec(buffer: Buffer) {
@@ -84,9 +58,5 @@ export function destructurePayloadPubRec(buffer: Buffer) {
         remainingLength: buffer.subarray(++cursor,cursor = cursor+willFitOneByte).byteLength,
         identifier: buffer.subarray(cursor)
     }
-    
-    // packets.type = buffer[cursor]
-    // packets.remainingLength = buffer.subarray(++cursor,cursor = cursor+willFitOneByte).byteLength
-    // packets.identifier = buffer.subarray(cursor)
     return packets
 }

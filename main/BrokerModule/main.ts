@@ -35,8 +35,10 @@ export class BrokerEventHandler {
      public static retainQueue = new Map()
      public static pendingQueue = {}
      public static socketQueue = new Map()
-     public static eventData
+     public static idQueue = 0
      public static connection = {}
+     public static eventDataHex ;
+       public static eventData;
      constructor() {
      }
      @validatePayload
@@ -57,6 +59,7 @@ export class BrokerEventHandler {
      }
      public static  emitPayload<EventConfig>(EventData, socket) {
           let payload;
+          this.eventDataHex = EventData
           this.eventData = EventData
           switch ((EventData[0] & ~((1 << 4) - 1))) {
                // 10 Represents connection packet
@@ -141,9 +144,8 @@ export class BrokerEventHandler {
                     )
                     break;
                case SUPPORTED_PACKETS.PUBREC.type:
-                    console.log("rec",EventData)
                     payload = destructurePayloadPubRec(EventData)
-                    processPubRec(payload.identifier, socket)
+                    processPubRec.apply(this,[payload.identifier, socket])
                     break;
                case SUPPORTED_PACKETS.PUBACK.type:
                     {
@@ -186,9 +188,10 @@ export class BrokerEventHandler {
                     generateResponePing(SUPPORTED_PACKETS.PINGRESP.type, keepAlive, socket)
                     break;
                case SUPPORTED_PACKETS.DISCONNECT.type:
+                    console.log("dis")
                     cliendID = socket.state.cliendID.toString()
                     processDisconnect.apply(this, [cliendID, socket ,socket.clean])
-                    connectionState.delete(cliendID)
+                    this.socketQueue.delete(cliendID)
                     socket.destroy()
                     break;
                default:
@@ -199,23 +202,22 @@ export class BrokerEventHandler {
                          let block: any = processWill.apply(this,[ cliendID, socket])
                          console.log("blk",block)
                          if(block){
-                         let payload:any = destructurePayloadPublish(block.buffer)
+                         let payload:any = destructurePayloadPublish(block)
                          let subscribedClients: any = Object.keys(this.subscription[payload.topic]||{})
                          console.log("dissub",subscribedClients)
                           deliverMessage.apply(this,
                               [
                               subscribedClients,
                               payload.qos,
-                              block.buffer,
+                              block,
                               payload.topic.toString(),
                               ]
                          ) 
                     }
                           processDisconnect.apply(this, [cliendID,socket,socket.clean])
 
-                         connectionState.delete(cliendID)
-                         socket.destroy()
-                    
+                         this.socketQueue.delete(cliendID)
+                        
                          break;
                     }
 

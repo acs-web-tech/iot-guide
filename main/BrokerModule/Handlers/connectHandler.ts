@@ -9,7 +9,9 @@ export async function processConnect(responseType, requestData, reason,connectio
         willMessageTopic:requestData.willMessageTopic,
         clean:socket.clean,
         aliveTime:requestData.aliveTime,
-        subscriptions:[]
+        subscriptions:[],
+        inboundMessages:{},
+        outbondMessages:{}
     }
       // connack
     generateRespone(responseType, reason, socket)

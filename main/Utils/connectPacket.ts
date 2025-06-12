@@ -1,5 +1,6 @@
 import { PacketStructure } from "./Interface/packets"
 export function connect_Payload(buffer: Buffer) {
+    // Be clear with this structure 
     let packets: PacketStructure = {
         type: 0,
         remainingLength: 0,
@@ -20,6 +21,7 @@ export function connect_Payload(buffer: Buffer) {
         willMessageTopicLen: 0,
         willMessageTopic: Buffer.from([]) || null
     }
+    // Should not remove
     let cursor = 0
     packets.type = buffer[cursor]
     let willFitOneByte = bytesConsumed(buffer.byteLength)
@@ -55,11 +57,18 @@ export function connect_Payload(buffer: Buffer) {
     return packets
 }
 export let bytesConsumed = (totalLength: number): number => {
+    // IBM Remaining length https://public.dhe.ibm.com/software/dw/webservices/ws-mqtt/mqtt-v3r1.html
     if ((totalLength < 0x7F)) {
         return 1
     }
     if ((totalLength > 0x7F)) {
         return 2
+    }
+    if((totalLength > 0x1FFFFF)){
+        return 3
+    }
+    if((totalLength> 0xFFFFFFF)){
+       return 4
     }
     return 0
 

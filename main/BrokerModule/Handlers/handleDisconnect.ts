@@ -4,7 +4,7 @@ export async function processDisconnect(cliendID, socket, clean) {
   if (clean != 0) {
   
     let subscriptions = this.connection[cliendID.toString()]?.subscriptions
-    console.log("14", subscriptions, this.connection)
+    //console.log("14", subscriptions, this.connection)
 
     for (let topic of subscriptions) {
       delete this.subscription?.[topic]?.[cliendID.toString()]
